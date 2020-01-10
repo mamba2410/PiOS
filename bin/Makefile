@@ -138,6 +138,9 @@ clean:
 	rm $(MAIN_BIN).elf
 	@echo ""
 
+qemu: build
+	qemu-system-aarch64 -M raspi3 -kernel kernel8.img -curses -serial null -serial stdio
+
 # Recipe for rebuilding. Just an easy way to run "make clean; make build"
 rebuild: clean build
 	@echo "Rebuilt binary"

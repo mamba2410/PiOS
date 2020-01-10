@@ -34,11 +34,13 @@ void	mini_uart_init(){
 }
 
 char	mini_uart_getc(){
+	char r;
 	while(1){
 		if( mmio_get32(AUX_MU_LSR_REG) & 0x01 )
 			break;
 	}
-	return (mmio_get32(AUX_MU_IO_REG) & 0xff);
+	r = (mmio_get32(AUX_MU_IO_REG) & 0xff);
+	return (r=='\r')?'\n':r;
 }
 
 // char	mini_uart_gets(){}
@@ -53,6 +55,7 @@ void	mini_uart_putc(char c){
 
 void	mini_uart_puts(char* s){
 	for(int i = 0; s[i] != '\0'; i++){
+		if(s[i] == '\n') mini_uart_putc('\r');
 		mini_uart_putc(s[i]);
 	}
 }

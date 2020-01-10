@@ -15,19 +15,20 @@ void kernel_main(void){
 	// Working with the mini uart instead of the PL011 uart because it's apparently simpler
 	mini_uart_init();
 	// Put a string to the uart bus
-	//mini_uart_puts("Hello, World!\r\n");
+	mini_uart_puts("Hello, World!\n");
+	mini_uart_puts("This is a new line\n");
 
 	
-	//char c;
+	char c;
 	// Forever...
 	while(1){
 		// Just echo the input from the serial back
-		//c = mini_uart_getc();
-		//mini_uart_putc(c);
+		c = mini_uart_getc();
+		mini_uart_putc(c);
 		
 		// Temporary to find out if it works
-		mini_uart_puts("Hello, World!\r\n");
-		mmio_delay(5e8);
+		//mini_uart_puts("Hello, World!\r\n");
+		//mmio_delay(1000);
 	}
 
 
