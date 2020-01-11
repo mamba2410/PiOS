@@ -6,4 +6,6 @@
 - Implement `sprintf`
 - Implement a baud rate, calculated by `baudrate = system_clock_freq / (8*(baudrate_register+1))` and `system_clock_freq=250MHz`
 - Change exception level to EL1
+	- Need to fix exception level, currently running at EL2, need EL3
+- Implement interrupt handling
 

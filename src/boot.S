@@ -17,8 +17,8 @@
 _start:
 	mrs		x0, mpidr_el1		// Move processor id from system register to gp register
 	and		x0,	x0,	#0xff		// Test the last byte of the processor id and put it in the compare register
-	cbz		x0,	master			// If processor has id zero, go to master
-	b		processor_hang		// If processor id is not zero, continue to infinite loop
+	cbz		x0,	el1_entry		// If processor has id zero, go to master
+								// If processor id is not zero, continue to infinite loop
 
 processor_hang:					// Infi-loop to hang the processors we don't want
 	b		processor_hang
