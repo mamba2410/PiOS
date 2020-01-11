@@ -15,4 +15,8 @@
 // If written a 0, no change occurs to that pin
 #define GPPUDCLK0       (PERIPHERAL_BASE+0x00200098)
 
+#define SYS_CLOCK_FREQ		250e6									// System clock frequency is 250MHz
+#define BAUD_RATE			115200									// Chosen baud rate
+#define BAUD_RATE_REG_VAL	(SYS_CLOCK_FREQ/(8 * BAUD_RATE) - 1)	// Calculate the register value for the baud rate
+
 #endif

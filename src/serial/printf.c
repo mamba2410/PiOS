@@ -1,5 +1,4 @@
 #include <serial/printf.h>
-#include <serial/mini_uart.h>
 #include <stdint.h>
 #include <stdarg.h>
 
@@ -97,22 +96,22 @@ static void put_n_characters(uint8_t n, char fill, char *buffer){
 	char *p = buffer;
 	char c;
 	while( *p++ && n > 0 ) n--;						// Counting how many characters are already in the string, leaving the number of fill characters
-	while( n-- > 0 ) mini_uart_putc(fill);			// Print the required fill characters
-	while( (c = *buffer++) ) mini_uart_putc(c);		// Print the rest of the string
+	while( n-- > 0 ) uart_putc(fill);			// Print the required fill characters
+	while( (c = *buffer++) ) uart_putc(c);		// Print the rest of the string
 }
 
 
 /*
  * Format the string with the arguments
- * prints string to mini_uart
+ * prints string to uart
  */
-void mini_uart_format(char *format, va_list va){
+void uart_format(char *format, va_list va){
 	char buffer[12];	// have a buffer string
 	char c;
 
 	// Loop through characters that arent null
 	while( (c = *format++) ){
-		if( c != '%') mini_uart_putc(c);		// If the character isn't special, print it
+		if( c != '%') uart_putc(c);		// If the character isn't special, print it
 		else{
 			char fill = ' ';
 			uint32_t number_length = 0;
@@ -144,7 +143,7 @@ void mini_uart_format(char *format, va_list va){
 					break;
 				}
 				case 'c': {		// printing a character
-					mini_uart_putc((char)va_arg(va, uint32_t));		// Print the character in the arguments
+					uart_putc((char)va_arg(va, uint32_t));		// Print the character in the arguments
 					break;
 				}
 				case 's': {		// printing a string
@@ -152,7 +151,7 @@ void mini_uart_format(char *format, va_list va){
 					break;
 				}
 				case '%': {		// printing a literal '%'
-					mini_uart_putc(c);
+					uart_putc(c);
 				}
 				default: break;
 			}
@@ -167,10 +166,10 @@ void mini_uart_format(char *format, va_list va){
 /*
  * printf for the mini uart
  */
-void mini_uart_printf(char *format, ...){
+void uart_printf(char *format, ...){
 	va_list va;
 	va_start(va, format);
-	mini_uart_format(format, va);
+	uart_format(format, va);
 	va_end(va);
 }
 

@@ -3,15 +3,15 @@
 
 #include <stdarg.h>
 
-// TODO implement sprintf
-// TODO replace all mini_uart_putc with a macro that user can change
+// Set a macro for the putc function printf uses
+#define  uart_putc uart0_putc
+#include <serial/uart0.h>
 
-void	mini_uart_printf (char *format, ...);
+void	uart_format (char *format, va_list va);
+void	uart_printf (char *format, ...);
 //void 	mini_uart_sprintf(char *string, char *format, ...);
-void	mini_uart_format (char *format, va_list va);
 
-#define printf  mini_uart_printf
+#define printf  uart_printf
 //#define sprintf mini_uart_sprintf
-
 
 #endif /* PRINTF_H */

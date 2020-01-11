@@ -16,14 +16,13 @@
 #define AUX_MU_STAT_REG (PERIPHERAL_BASE+0x00215064)
 #define AUX_MU_BAUD_REG (PERIPHERAL_BASE+0x00215068)
 
-// Function definitions for initialisation
-void	mini_uart_init();
 
-// Function definitions for communication between the mini uart
-void	mini_uart_putc(char);
-void	mini_uart_puts(char*);
+void	mini_uart_init();			// Initialise mini uart
 
-char	mini_uart_getc();
-char*	mini_uart_gets();
+void	mini_uart_putc(char);		// Put a character to the mini uart
+char	mini_uart_getc();			// Get a character from the mini uart
+
+void	mini_uart_puts(char*);		// Put a string to the mini uart
+char*	mini_uart_gets();			// Get a string from the mini uart
 
 #endif
