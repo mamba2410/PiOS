@@ -134,8 +134,8 @@ build: main build_number
 # Recipe for cleaning. Removes all objects and binaries
 clean:
 	rm -rf $(MAIN_OBJ_D)/*.o
-	rm $(MAIN_BIN).img
-	rm $(MAIN_BIN).elf
+	[ -f "./$(MAIN_BIN).img" ] && rm $(MAIN_BIN).img
+	[ -f "./$(MAIN_BIN).elf" ] && rm $(MAIN_BIN).elf
 	@echo ""
 
 qemu: build
