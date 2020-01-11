@@ -1,17 +1,7 @@
 
-
-// Function to zero out the memory in the section starting at x0
-// And with size x1
-// Make the label visible to anybody
 .global zero_memory
-zero_memory:
-	// Store the contents of the zero register into 
-	// The address pointed to by x0
-	// And offset x0 by +8
-	str		xzr,	[x0],	#8
-	// Decrement the size by 8
-	subs	x1,		x1,		#8
-	// Loop back around
-	b.gt	zero_memory
-	// Return to where you came from
-	ret
+zero_memory:					// Zero out memory section, start at x0 for x1 bytes
+	str		xzr, [x0], #8		// Fill address at x0 with the zero register (64 bits of 0) and increment address by 8 bytes
+	subs	x1,	x1,	#8			// Decrement the size by 8
+	b.gt	zero_memory			// If size is positive, do it again
+	ret							// Return to function call

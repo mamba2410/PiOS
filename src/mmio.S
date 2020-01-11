@@ -1,30 +1,17 @@
 
-// Let anything use this function
 .global mmio_put32
-mmio_put32:
-	// Put the last(?) 32 bits of register 1
-	// into address pointed to by x0
-	str	w1,	[x0]
-	// Return to where you came from
-	ret
+mmio_put32:				// Put 32 bits of data into an address
+	str		w1,	[x0]	// Put the lower 32 bits of x1 into the address in x0
+	ret					// Return to function call
 
-
-// Let anything use this function
 .global mmio_get32
-mmio_get32:
-	// Put last(?) 32 bits of data at [x0]
-	// Into w0
-	ldr	w0,	[x0]
-	// Go back to where you came
-	ret
+mmio_get32:				// Get 32 bits of data from an address
+	ldr	w0,	[x0]		// Load x0 with the lower 32 bits of data at the address x0
+	ret					// Return to function call
 
-// Let anything use this function
 .global mmio_delay
-mmio_delay:
-	// decrements count by 1
-	subs	x0,	x0,	#1
-	// if not zero, do it again
-	bne		mmio_delay
-	// Go back to call point
-	ret
+mmio_delay:				// Delay x0 clock cycles
+	subs	x0,	x0,	#1	// Decrement first argument
+	bne		mmio_delay	// If not zero, do it again
+	ret					// Return to function call
 
