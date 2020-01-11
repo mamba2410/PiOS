@@ -38,13 +38,13 @@ static void uint64_to_str(uint64_t num, uint8_t base, uint8_t upper_case, char *
 static void int64_to_str(int64_t num, char *buffer){
 	// If number is negative
 	if(num < 0){	
-		num = -num;			// Make it positive
+		num *= (int64_t)(-1);			// Make it positive
 		*buffer++ = '-';	// Put a negative sign in front
 	}
 
 	// Same logic as unsigned now
 	// Only want decimal this time, so base=10 and upper case doesn'y matter
-	uint64_to_str((uint64_t)num, 10, 0, buffer);
+	uint64_to_str(num, 10, 0, buffer);
 }
 
 

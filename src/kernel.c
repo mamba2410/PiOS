@@ -1,4 +1,6 @@
 #include <serial/mini_uart.h>
+#include <serial/printf.h>
+#include <stdint.h>
 
 // Main function passed to by boot.S
 void kernel_main(void){
@@ -13,9 +15,13 @@ void kernel_main(void){
 	// Initialise the mini uart
 	// Working with the mini uart instead of the PL011 uart because it's apparently simpler
 	mini_uart_init();
+
+	int64_t num = -110;
+
 	// Put a string to the uart bus
-	mini_uart_puts("Hello, World!\n");
-	mini_uart_puts("This is a new line\n");
+	printf("Hello, World!\n");
+	printf("Number is: %d\n", num );
+	printf("Character is %c and string is %s\n", 'x', "hello");
 
 	
 	char c;
