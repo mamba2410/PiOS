@@ -1,52 +1,57 @@
 #include <memory/mem.h>
+#include <system/arm_system_registers.h>
 
 // Tells the linker to put everything here in the .text.boot section
 .section ".text.boot"
-// Tells the assembler that _start should be visible anywhere
-.global _start
 
-// Note: x<n> is a 64-bit register
-//		w<n> is the lower 32-bits of x<n>
+/*
+ * Note:	x<n> is a 64-bit register
+ *			w<n> is the lower 32-bits of x<n>
+ */
 
-// This code is run by all processor cores. Multi-core processors are hard so
-// just infi-loop all processors except id 0
+/*
+ * All processor cores run this code, so need to handle it differently for each one
+ * otherwise the code will be run 4 times and the serial registers might mess up
+ */
+.global 	_start
 _start:
-	// mrs loads a value from system register and puts it into general purpose register
-	// x0 is first general purpose register
-	// mpdir_el1 is the system register that holds the processor id
-	mrs	x0, mpidr_el1
-	// Test the last byte of the processor id
-	// Really just a way of putting the last byte of the id into the compare register
-	and	x0,	x0,	#0xff
-	// If processor id is zero, go to master label
-	cbz	x0,	master
-	// If processor id is not zero, branch to infinite loop
-	b	processor_hang
+	mrs		x0, mpidr_el1		// Move processor id from system register to gp register
+	and		x0,	x0,	#0xff		// Test the last byte of the processor id and put it in the compare register
+	cbz		x0,	master			// If processor has id zero, go to master
+	b		processor_hang		// If processor id is not zero, continue to infinite loop
 
-// Infi-loop to hang the processors we don't want
-processor_hang:
-	b	processor_hang
+processor_hang:					// Infi-loop to hang the processors we don't want
+	b		processor_hang
 
-// master label, branched to by processor we want
-master:
-	// Load the bss_begin address into x0
-	adr	x0,	bss_begin
-	// Load the bss_end address into x1
-	adr x1,	bss_end
-	// Get the size of the bss region and put in x1
-	sub	x1,	x1,	x0
-	// Branch with link (remember where you came from) to the zero_memory label
-	bl	zero_memory
+master:							// Master label, branched to by processor we want
+	ldr		x0, =SCTLR_VALUE_MMU_DISABLED	// Load the system control flags into x0
+	msr		sctlr_el1, x0		// Put this value in system control register
+	ldr		x0, =HCR_VALUE		// Load the hypervisor config value
+	msr		hcr_el2, x0			// Put this into the hypervisor configuration register
+	ldr		x0, =SCR_VALUE		// Load the secure configuration value
+	msr		scr_el3, x0			// Put this into the secure configuration register
+	ldr		x0, =SPSR_VALUE		// Load the desired program status value
+	msr		spsr_el3, x0		// Put into the saved program status register
+	adr		x0, el1_entry		// Put address of el1_entry into x0
+	msr		elr_el3, x0			// Put this into exception link register
+	eret						// Return to where the exception registers say
+
+el1_entry:						// Code to be run after processor enters exception level 1
+	adr		x0,	bss_begin		// Load bss_begin address
+	adr 	x1,	bss_end			// Load bss_end address
+	sub		x1,	x1,	x0			// x1 = bss_size = bss_end - bss_start
+	bl		zero_memory			// Branch with link to zero out the memory
 	
-	// Move stack pointer to this address
-	// Stack pointer moves down from here to zero
-	// Reccommended by github is 4M, as kernel is tiny
-	mov	sp,	#LOW_MEMORY
-	// Branch to function called kernel_main
-	// This will be defined in a c file
-	bl	kernel_main
+	mov		sp,	#LOW_MEMORY		// Move stack pointer to the low memory location, 4M should be enough since kernel is tiny
+	bl		kernel_main			// Branch to kernel_main, defined in a c file
 
-	// When done, just chill I guess
-	// Should probably terminate with something here.
+	b 		processor_hang		// If we return from kernel_main, hang the processor
+
+
+.global	get_exception_level
+get_exception_level:			// Global function to get exception level
+	mrs		x0, CurrentEL		// Put current exception level in x0
+	lsr		x0, x0, #2			// Logical shift right twice, bits 0 and 1 are reserved and always zero
+	ret							// Return from function
 
 

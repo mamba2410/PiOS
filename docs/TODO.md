@@ -5,4 +5,5 @@
 	- Change printf to call a macro function instead of `mini_uart_putc`
 - Implement `sprintf`
 - Implement a baud rate, calculated by `baudrate = system_clock_freq / (8*(baudrate_register+1))` and `system_clock_freq=250MHz`
+- Change exception level to EL1
 
