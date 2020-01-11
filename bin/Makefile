@@ -66,28 +66,28 @@ $(MEMORY_OBJ_D)/%_c.o:	$(MEMORY_SRC_D)/%.c
 
 memory: $(MEMORY_C_OBJ) $(MEMORY_A_OBJ) $(MEMORY_INC)
 
-# UART library, statically linked
-UART_BIN		= libuart.o
-UART_CC_FLAGS	= $(GLOBAL_CC_FLAGS)
-UART_LD_FLAGS	= $(GLOBAL_LD_FLAGS)
-UART_AS_FLAGS	= $(GLOBAL_AS_FLAGS)
-UART_SRC_D   	= ../src/uart
-UART_INC_D   	= ../include/uart
-UART_OBJ_D   	= ./objects
-UART_C_SRC		= $(wildcard $(UART_SRC_D)/*.c)
-UART_A_SRC		= $(wildcard $(UART_SRC_D)/*.S)
-UART_INC		= $(wildcard $(UART_INC_D)/*.h)
-UART_C_OBJ		= $(patsubst $(UART_SRC_D)/%.c, $(UART_OBJ_D)/%_c.o, $(UART_C_SRC))
-UART_A_OBJ		= $(patsubst $(UART_SRC_D)/%.S, $(UART_OBJ_D)/%_S.o, $(UART_A_SRC))
+# Serial library, statically linked
+SERIAL_BIN		= libserial.o
+SERIAL_CC_FLAGS	= $(GLOBAL_CC_FLAGS)
+SERIAL_LD_FLAGS	= $(GLOBAL_LD_FLAGS)
+SERIAL_AS_FLAGS	= $(GLOBAL_AS_FLAGS)
+SERIAL_SRC_D   	= ../src/serial
+SERIAL_INC_D   	= ../include
+SERIAL_OBJ_D   	= ./objects
+SERIAL_C_SRC		= $(wildcard $(SERIAL_SRC_D)/*.c)
+SERIAL_A_SRC		= $(wildcard $(SERIAL_SRC_D)/*.S)
+SERIAL_INC		= $(wildcard $(SERIAL_INC_D)/*.h)
+SERIAL_C_OBJ		= $(patsubst $(SERIAL_SRC_D)/%.c, $(SERIAL_OBJ_D)/%_c.o, $(SERIAL_C_SRC))
+SERIAL_A_OBJ		= $(patsubst $(SERIAL_SRC_D)/%.S, $(SERIAL_OBJ_D)/%_S.o, $(SERIAL_A_SRC))
 
-$(UART_OBJ_D)/%_S.o:	$(UART_SRC_D)/%.S
-	$(AS) $(UART_AS_FLAGS) -I'$(UART_INC_D)' -c $< -o $@
+$(SERIAL_OBJ_D)/%_S.o:	$(SERIAL_SRC_D)/%.S
+	$(AS) $(SERIAL_AS_FLAGS) -I'$(SERIAL_INC_D)' -c $< -o $@
 
-$(UART_OBJ_D)/%_c.o:	$(UART_SRC_D)/%.c
-	$(CC) $(UART_CC_FLAGS) -I'$(UART_INC_D)' -c $< -o $@ 
+$(SERIAL_OBJ_D)/%_c.o:	$(SERIAL_SRC_D)/%.c
+	$(CC) $(SERIAL_CC_FLAGS) -I'$(SERIAL_INC_D)' -c $< -o $@ 
 
-uart: $(UART_C_OBJ) $(UART_A_OBJ) $(UART_INC)
-	@echo $(UART_C_OBJ)
+serial: $(SERIAL_C_OBJ) $(SERIAL_A_OBJ) $(SERIAL_INC)
+	@echo $(SERIAL_C_OBJ)
 
 ###########################################################################################################
 # Main recipe
@@ -108,9 +108,9 @@ MAIN_C_SRC		= $(wildcard $(MAIN_SRC_D)/*.c)
 MAIN_A_SRC		= $(wildcard $(MAIN_SRC_D)/*.S)
 MAIN_INC	  	= $(wildcard $(MAIN_INC_D)/*.h)
 MAIN_C_OBJ 		= $(patsubst $(MAIN_SRC_D)/%.c, $(MAIN_OBJ_D)/%_c.o, $(MAIN_C_SRC))
-MAIN_C_OBJ		+= $(MEMORY_C_OBJ) $(UART_C_OBJ)
+MAIN_C_OBJ		+= $(MEMORY_C_OBJ) $(SERIAL_C_OBJ)
 MAIN_A_OBJ		= $(patsubst $(MAIN_SRC_D)/%.S, $(MAIN_OBJ_D)/%_S.o, $(MAIN_A_SRC))
-MAIN_A_OBJ		+= $(MEMORY_A_OBJ) $(UART_A_OBJ)
+MAIN_A_OBJ		+= $(MEMORY_A_OBJ) $(SERIAL_A_OBJ)
 
 $(MAIN_OBJ_D)/%_S.o:	$(MAIN_SRC_D)/%.S
 	$(AS) $(MAIN_AS_FLAGS) -I'$(MAIN_INC_D)' -c $< -o $@

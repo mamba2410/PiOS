@@ -1,5 +1,4 @@
-#include <uart/mini_uart.h>
-#include <uart/mmio.h>
+#include <serial/mini_uart.h>
 
 // Main function passed to by boot.S
 void kernel_main(void){

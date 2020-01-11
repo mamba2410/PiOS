@@ -1,6 +1,8 @@
 #ifndef MINI_UART_H
 #define MINI_UART_H
 
+#include <serial/gpio.h>
+
 #define AUX_ENABLES     (PERIPHERAL_BASE+0x00215004)
 #define AUX_MU_IO_REG   (PERIPHERAL_BASE+0x00215040)
 #define AUX_MU_IER_REG  (PERIPHERAL_BASE+0x00215044)

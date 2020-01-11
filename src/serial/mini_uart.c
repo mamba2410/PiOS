@@ -1,5 +1,4 @@
-#include <mini_uart.h>
-#include <gpio.h>
+#include <serial/mini_uart.h>
 #include <mmio.h>
 #include <stdint.h>
 
