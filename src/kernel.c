@@ -1,5 +1,3 @@
-//#include <serial/mini_uart.h>
-#include <serial/uart0.h>
 #include <serial/printf.h>
 #include <stdint.h>
 
@@ -8,8 +6,7 @@ extern uint8_t get_exception_level();
 // Main function passed to by boot.S
 void kernel_main(void){
 
-	//mini_uart_init();	// Initialise mini uart
-	uart0_init();		// Initialise uart0
+	uart_init();		// Initialise uart
 
 	printf("Initialised uart!\n");
 
@@ -21,8 +18,8 @@ void kernel_main(void){
 	// Forever...
 	while(1){
 		// Just echo the input from the serial back
-		c = uart0_getc();
-		uart0_putc(c);
+		c = uart_getc();
+		uart_putc(c);
 		
 	}
 

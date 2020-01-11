@@ -1,1 +1,3 @@
 bin/objects/*
+bin/kernel8.*
+bin/metadata/*
