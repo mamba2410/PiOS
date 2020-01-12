@@ -1,11 +1,16 @@
 # TODO
 
+- Change mailboxes to use bit fields
 - Add full UART port
-	- User can change between uart and mini uart
-	- Change printf to call a macro function instead of `mini_uart_putc`
+	- Think theres something up with the baud rate
 - Implement `sprintf`
-- Implement a baud rate, calculated by `baudrate = system_clock_freq / (8*(baudrate_register+1))` and `system_clock_freq=250MHz`
 - Change exception level to EL1
 	- Need to fix exception level, currently running at EL2, need EL3
-- Implement interrupt handling
+- Change `mmio_xxx` to a macro?
+	- Constant addresses look like `#define ADDRESS (uint64_t*)(0x00000)`
+	- Macro looks like `#define MMIO_PUT32(address, data) *(ADDRESS) = data`
+	- Similarly for `get32``#define MMIO_GET32(address) *(ADDRESS)`
+	- Delay looks like `#define MMIO_DELAY(count) while(count--){asm volatile("nop");}`
+- Research and implement interrupt handling
+- Research and implement memory paging
 
