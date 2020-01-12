@@ -162,10 +162,6 @@ clean:
 	[ -f "./$(MAIN_BIN).elf" ] && rm $(MAIN_BIN).elf
 	@echo ""
 
-qemu: build
-	@echo ""
-	@qemu-system-aarch64 -M raspi3 -kernel kernel8.img -serial null -serial stdio -display none
-
 # Recipe for rebuilding. Just an easy way to run "make clean; make build"
 rebuild: clean build
 	@echo "Rebuilt binary"
