@@ -4,8 +4,6 @@
 - Add full UART port
 	- Think theres something up with the baud rate
 - Implement `sprintf`
-- Change exception level to EL1
-	- Need to fix exception level, currently running at EL2, need EL3
 - Change `mmio_xxx` to a macro?
 	- Constant addresses look like `#define ADDRESS (uint64_t*)(0x00000)`
 	- Macro looks like `#define MMIO_PUT32(address, data) *(ADDRESS) = data`

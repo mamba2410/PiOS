@@ -2,6 +2,15 @@
 #define ARM_SYSTEM_REGISTERS_H
 
 /*
+ * Define the exception levels
+ */
+#define Current_EL_EL1				(1<<2)
+#define Current_EL_EL2				(2<<2)
+#define Current_EL_EL3				(3<<2)
+#define Current_EL_EL4				(4<<2)
+
+
+/*
  * SCTLR_EL1, System Control Register (EL1), AArch64-Reference-Manual page 2654
  */
 #define SCTLR_RESERVED              (3 << 28) | (3 << 22) | (1 << 20) | (1 << 11)

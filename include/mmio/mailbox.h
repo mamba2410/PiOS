@@ -34,6 +34,18 @@ extern volatile uint32_t mailbox[36];
 #define MBOX_FULL       0x80000000
 #define MBOX_EMPTY      0x40000000
 
+// Bit field struct for a mailbox message
+typedef struct{
+	uint8_t channel : 4;
+	uint32_t data : 28;
+} mailbox_message_t;
+
+// Bit field struct for a mailbox status
+typedef struct{
+	uint32_t reserved : 30;
+	uint8_t empty : 1;
+	uint8_t full : 1;
+} mailbox_status_t;
 
 uint8_t mailbox_call(uint8_t);
 
