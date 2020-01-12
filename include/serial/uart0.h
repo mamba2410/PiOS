@@ -1,9 +1,9 @@
 #ifndef UART0_H
 #define UART0_H
 
-#include <serial/gpio.h>
+#include <mmio/gpio.h>
 
-#define UART0_BASE		(PERIPHERAL_BASE + 0x00201000)
+#define UART0_BASE		(MMIO_BASE + 0x00201000)
 
 #define UART0_DR    	(UART0_BASE + 0x00)
 #define UART0_RSRECR	(UART0_BASE + 0x04)
@@ -32,4 +32,4 @@ char  uart0_getc();			// Get character from uart0
 void  uart0_puts(char *);	// Put string onto uart0
 char *uart0_gets();			// Get string from uart0
 
-#endif // UART0_H
+#endif /* UART0_H */

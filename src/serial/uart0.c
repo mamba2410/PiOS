@@ -1,27 +1,34 @@
 #include <serial/uart0.h>
-#include <mmio.h>
+#include <mmio/mmio.h>
 #include <stdint.h>
 
 /*
  * Initialise the uart0 line
  */
 void uart0_init(){
+	uint32_t selector;
 	uint32_t bitmask;
-	mmio_put32(UART0_CR, 0);				// Disable uart0
-				
-	mmio_put32(GPPUD, 0);					// Set pull up/down to none (floating)
-	mmio_delay(150);						// Delay 150 clock cycles
-	bitmask = (1<<14)|(1<<15);				// Set bitmask to pins 14 and 15
-	mmio_put32(GPPUDCLK0, bitmask);			// Pulse pins 14 and 15
-	mmio_delay(150);						// Delay 150 clock cycles
-	mmio_put32(GPPUDCLK0, 0);				// End pulse
 
-	mmio_put32(UART0_ICR, 0x7FF);			// Clear pending interrupts
+	mmio_put32(UART0_CR, 0);			// Disable uart0
+
+	selector = mmio_get32(GPFSEL1);		// Grab GPIO selector
+	selector &= ~((7<<12) | (7<<15));	// Clean GPIO 14 and 15
+	selector |=  ((4<<12) | (4<<15));	// Set them to alt0
+	mmio_put32(GPFSEL1, selector);		// Put selector back
+				
+	mmio_put32(GPPUD, 0);				// Set pull up/down to none (floating)
+	mmio_delay(150);					// Delay 150 clock cycles
+	bitmask = (1<<14)|(1<<15);			// Set bitmask to pins 14 and 15
+	mmio_put32(GPPUDCLK0, bitmask);		// Pulse pins 14 and 15
+	mmio_delay(150);					// Delay 150 clock cycles
+	mmio_put32(GPPUDCLK0, 0);			// End pulse
+
+	mmio_put32(UART0_ICR, 0x7FF);		// Clear pending interrupts
 
 	// Write to integer and fractional part of the uart registers
 	// Hardcoded at 115200 for now
-	mmio_put32(UART0_IBRD, 1);
-	mmio_put32(UART0_FBRD, 40);
+	mmio_put32(UART0_IBRD, 2);
+	mmio_put32(UART0_FBRD, 11);
 
 	bitmask = (1<<4)|(1<<5)|(1<<6);
 	mmio_put32(UART0_LCRH, bitmask);	// Enable FIFO and 8 bits with 1 stop bit, no parity

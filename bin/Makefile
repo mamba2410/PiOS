@@ -89,6 +89,30 @@ $(SERIAL_OBJ_D)/%_c.o:	$(SERIAL_SRC_D)/%.c
 serial: $(SERIAL_C_OBJ) $(SERIAL_A_OBJ) $(SERIAL_INC)
 	@echo $(SERIAL_C_OBJ)
 
+# MMIO library, statically linked
+MMIO_BIN		= libmmio.o
+MMIO_CC_FLAGS	= $(GLOBAL_CC_FLAGS)
+MMIO_LD_FLAGS	= $(GLOBAL_LD_FLAGS)
+MMIO_AS_FLAGS	= $(GLOBAL_AS_FLAGS)
+MMIO_SRC_D   	= ../src/mmio
+MMIO_INC_D   	= ../include
+MMIO_OBJ_D   	= ./objects
+MMIO_C_SRC		= $(wildcard $(MMIO_SRC_D)/*.c)
+MMIO_A_SRC		= $(wildcard $(MMIO_SRC_D)/*.S)
+MMIO_INC		= $(wildcard $(MMIO_INC_D)/*.h)
+MMIO_C_OBJ		= $(patsubst $(MMIO_SRC_D)/%.c, $(MMIO_OBJ_D)/%_c.o, $(MMIO_C_SRC))
+MMIO_A_OBJ		= $(patsubst $(MMIO_SRC_D)/%.S, $(MMIO_OBJ_D)/%_S.o, $(MMIO_A_SRC))
+
+$(MMIO_OBJ_D)/%_S.o:	$(MMIO_SRC_D)/%.S
+	$(AS) $(MMIO_AS_FLAGS) -I'$(MMIO_INC_D)' -c $< -o $@
+
+$(MMIO_OBJ_D)/%_c.o:	$(MMIO_SRC_D)/%.c
+	$(CC) $(MMIO_CC_FLAGS) -I'$(MMIO_INC_D)' -c $< -o $@ 
+
+mmio: $(MMIO_C_OBJ) $(MMIO_A_OBJ) $(MMIO_INC)
+	@echo $(MMIO_C_OBJ)
+
+
 ###########################################################################################################
 # Main recipe
 ###########################################################################################################
@@ -108,9 +132,9 @@ MAIN_C_SRC		= $(wildcard $(MAIN_SRC_D)/*.c)
 MAIN_A_SRC		= $(wildcard $(MAIN_SRC_D)/*.S)
 MAIN_INC	  	= $(wildcard $(MAIN_INC_D)/*.h)
 MAIN_C_OBJ 		= $(patsubst $(MAIN_SRC_D)/%.c, $(MAIN_OBJ_D)/%_c.o, $(MAIN_C_SRC))
-MAIN_C_OBJ		+= $(MEMORY_C_OBJ) $(SERIAL_C_OBJ)
+MAIN_C_OBJ		+= $(MEMORY_C_OBJ) $(SERIAL_C_OBJ) $(MMIO_C_OBJ)
 MAIN_A_OBJ		= $(patsubst $(MAIN_SRC_D)/%.S, $(MAIN_OBJ_D)/%_S.o, $(MAIN_A_SRC))
-MAIN_A_OBJ		+= $(MEMORY_A_OBJ) $(SERIAL_A_OBJ)
+MAIN_A_OBJ		+= $(MEMORY_A_OBJ) $(SERIAL_A_OBJ) $(MMIO_A_OBJ)
 
 $(MAIN_OBJ_D)/%_S.o:	$(MAIN_SRC_D)/%.S
 	$(AS) $(MAIN_AS_FLAGS) -I'$(MAIN_INC_D)' -c $< -o $@

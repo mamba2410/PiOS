@@ -1,5 +1,5 @@
 #include <serial/mini_uart.h>
-#include <mmio.h>
+#include <mmio/mmio.h>
 
 /*
  * Initialise mini uart for io
