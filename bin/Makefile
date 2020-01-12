@@ -164,7 +164,7 @@ clean:
 
 qemu: build
 	@echo ""
-	@qemu-system-aarch64 -M raspi3 -kernel kernel8.img -serial stdio -serial null -display none
+	@qemu-system-aarch64 -M raspi3 -kernel kernel8.img -serial null -serial stdio -display none
 
 # Recipe for rebuilding. Just an easy way to run "make clean; make build"
 rebuild: clean build

@@ -111,8 +111,12 @@ void uart_format(char *format, va_list va){
 
 	// Loop through characters that arent null
 	while( (c = *format++) ){
-		if( c != '%') uart_putc(c);		// If the character isn't special, print it
-		else{
+		if( c != '%'){
+#ifdef NEWLINE_CARRIAGE_RETURN
+			if(c == '\n') uart_putc('\r');	// If the character is newline, also print carriage return
+#endif /* NEWLINE_CARRIAGE_RETURN */
+			uart_putc(c);					// If the character isn't special, print it
+		} else{
 			char fill = ' ';
 			uint32_t number_length = 0;
 			
