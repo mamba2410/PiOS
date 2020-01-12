@@ -27,12 +27,12 @@ void kernel_main(void){
 
 	//printf("Initialised mailbox!\n");
 
-	/*
+	
 	if( !mailbox_call(MBOX_CH_PROP) )
 		printf("Serial number is %08x%08x\n", mailbox[6], mailbox[5]);
 	else
 		printf("Unable to query serial\n");
-	*/
+	
 	
 	// Go into an echo loop
 	printf("Echoing\n");
