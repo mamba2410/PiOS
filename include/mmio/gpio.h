@@ -2,9 +2,8 @@
 #define GPIO_H
 
 #include <mmio/mmio.h>
-#include <stdint.h>
 
-#define GPIO_BASE		((uint64_t*)(MMIO_BASE+0x00200000))
+#define GPIO_BASE		(MMIO_BASE+0x00200000)
 
 #define GPFSEL0         ((uint64_t*)(GPIO_BASE+0x00))
 #define GPFSEL1         ((uint64_t*)(GPIO_BASE+0x04))
@@ -25,9 +24,5 @@
 #define GPPUDCLK0       ((uint64_t*)(GPIO_BASE+0x98))
 #define GPPUDCLK1       ((uint64_t*)(GPIO_BASE+0x9C))
 
-#define SYS_CLOCK_FREQ		250e6									// System clock frequency is 250MHz
-#define BAUD_RATE			115200									// Chosen baud rate
-//#define BAUD_RATE_REG_VAL	(SYS_CLOCK_FREQ/(8 * BAUD_RATE) - 1)	// Calculate the register value for the baud rate
-#define BAUD_RATE_REG_VAL	270
 
 #endif

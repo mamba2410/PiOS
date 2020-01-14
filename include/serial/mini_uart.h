@@ -17,6 +17,11 @@
 #define AUX_MU_STAT_REG 	((uint64_t*)(MMIO_BASE+0x00215064))
 #define AUX_MU_BAUD_REG 	((uint64_t*)(MMIO_BASE+0x00215068))
 
+// Constants for the baud rate
+#define SYS_CLOCK_FREQ		250e6									// System clock frequency is 250MHz
+#define BAUD_RATE			115200									// Chosen baud rate
+#define BAUD_RATE_REG_VAL	(uint32_t)(SYS_CLOCK_FREQ/(8 * BAUD_RATE) - 1)	// Calculate the register value for the baud rate
+//#define BAUD_RATE_REG_VAL	270
 
 void	mini_uart_init();			// Initialise mini uart
 

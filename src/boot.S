@@ -13,6 +13,7 @@
  * All processor cores run this code, so need to handle it differently for each one
  * otherwise the code will be run 4 times and the serial registers might mess up
  */
+ 	//.org	0x80000
 .global 	_start
 _start:
 	mrs		x0, mpidr_el1		// Move processor id from system register to gp register
