@@ -1,7 +1,7 @@
 #ifndef GPIO_H
 #define GPIO_H
 
-#include <mmio/mmio.h>
+#include <addresses/mmio_base.h>
 
 #define GPIO_BASE		(MMIO_BASE+0x00200000)
 

@@ -1,0 +1,6 @@
+#ifndef ADDR_MMIO_BASE_H
+#define ADDR_MMIO_BASE_H
+
+#define MMIO_BASE 0x3F000000
+
+#endif /* ADDR_MMIO_BASE_H */

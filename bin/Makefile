@@ -112,6 +112,28 @@ $(MMIO_OBJ_D)/%_c.o:	$(MMIO_SRC_D)/%.c
 mmio: $(MMIO_C_OBJ) $(MMIO_A_OBJ) $(MMIO_INC)
 	@echo $(MMIO_C_OBJ)
 
+# SYSTEM library, statically linked
+SYSTEM_BIN		= libsystem.o
+SYSTEM_CC_FLAGS	= $(GLOBAL_CC_FLAGS)
+SYSTEM_LD_FLAGS	= $(GLOBAL_LD_FLAGS)
+SYSTEM_AS_FLAGS	= $(GLOBAL_AS_FLAGS)
+SYSTEM_SRC_D   	= ../src/system
+SYSTEM_INC_D   	= ../include
+SYSTEM_OBJ_D   	= ./objects
+SYSTEM_C_SRC	= $(wildcard $(SYSTEM_SRC_D)/*.c)
+SYSTEM_A_SRC	= $(wildcard $(SYSTEM_SRC_D)/*.S)
+SYSTEM_INC		= $(wildcard $(SYSTEM_INC_D)/*.h)
+SYSTEM_C_OBJ	= $(patsubst $(SYSTEM_SRC_D)/%.c, $(SYSTEM_OBJ_D)/%_c.o, $(SYSTEM_C_SRC))
+SYSTEM_A_OBJ	= $(patsubst $(SYSTEM_SRC_D)/%.S, $(SYSTEM_OBJ_D)/%_S.o, $(SYSTEM_A_SRC))
+
+$(SYSTEM_OBJ_D)/%_S.o:	$(SYSTEM_SRC_D)/%.S
+	$(AS) $(SYSTEM_AS_FLAGS) -I'$(SYSTEM_INC_D)' -c $< -o $@
+
+$(SYSTEM_OBJ_D)/%_c.o:	$(SYSTEM_SRC_D)/%.c
+	$(CC) $(SYSTEM_CC_FLAGS) -I'$(SYSTEM_INC_D)' -c $< -o $@ 
+
+system: $(SYSTEM_C_OBJ) $(SYSTEM_A_OBJ) $(SYSTEM_INC)
+	@echo $(SYSTEM_C_OBJ)
 
 ###########################################################################################################
 # Main recipe
@@ -132,9 +154,9 @@ MAIN_C_SRC		= $(wildcard $(MAIN_SRC_D)/*.c)
 MAIN_A_SRC		= $(wildcard $(MAIN_SRC_D)/*.S)
 MAIN_INC	  	= $(wildcard $(MAIN_INC_D)/*.h)
 MAIN_C_OBJ 		= $(patsubst $(MAIN_SRC_D)/%.c, $(MAIN_OBJ_D)/%_c.o, $(MAIN_C_SRC))
-MAIN_C_OBJ		+= $(MEMORY_C_OBJ) $(SERIAL_C_OBJ) $(MMIO_C_OBJ)
+MAIN_C_OBJ		+= $(MEMORY_C_OBJ) $(SERIAL_C_OBJ) $(MMIO_C_OBJ) $(SYSTEM_C_OBJ)
 MAIN_A_OBJ		= $(patsubst $(MAIN_SRC_D)/%.S, $(MAIN_OBJ_D)/%_S.o, $(MAIN_A_SRC))
-MAIN_A_OBJ		+= $(MEMORY_A_OBJ) $(SERIAL_A_OBJ) $(MMIO_A_OBJ)
+MAIN_A_OBJ		+= $(MEMORY_A_OBJ) $(SERIAL_A_OBJ) $(MMIO_A_OBJ) $(SYSTEM_A_OBJ)
 
 $(MAIN_OBJ_D)/%_S.o:	$(MAIN_SRC_D)/%.S
 	$(AS) $(MAIN_AS_FLAGS) -I'$(MAIN_INC_D)' -c $< -o $@

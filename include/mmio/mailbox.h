@@ -2,6 +2,7 @@
 #define MAILBOX_H
 
 #include <stdint.h>
+#include <addresses/mmio_base.h>
 
 extern volatile uint32_t mailbox[36];
 

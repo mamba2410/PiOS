@@ -1,6 +1,8 @@
 #include <serial/printf.h>
 #include <stdint.h>
 #include <mmio/mailbox.h>
+#include <mmio/interrupts.h>
+#include <system/system_timer.h>
 
 extern uint8_t get_exception_level();
 
@@ -29,9 +31,15 @@ void kernel_main(void){
 
 	
 	if( !mailbox_call(MBOX_CH_PROP) )
-		printf("Serial number is %08x%08x\n", mailbox[6], mailbox[5]);
+		printf("Serial number is %08x %08x\n", mailbox[6], mailbox[5]);
 	else
 		printf("Unable to query serial\n");
+
+	// Initialise interrupts and system timer
+	irq_vector_init();
+	system_timer_init();
+	enable_interrupt_controller();
+	unmask_irq();
 	
 	
 	// Go into an echo loop
