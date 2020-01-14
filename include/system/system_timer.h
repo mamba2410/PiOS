@@ -18,6 +18,6 @@
 
 
 void system_timer_init();
-void handle_timer_irq();
+void handle_system_timer();
 
 #endif /* SYSTEM_TIMER_H */

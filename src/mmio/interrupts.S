@@ -8,8 +8,8 @@
 	.macro handle_invalid_entry	type			// Macro to handle interrupts we don't care about. Using macros to leave registers untouched
 	save_registers								// Macro to save the processor state
 	mov		x0, #\type							// Prepare arguments for the function call
-	mrs		x2, esr_el1							//
-	mrs		x3, elr_el1							//
+	mrs		x1, esr_el1							//
+	mrs		x2, elr_el1							//
 	bl		show_invalid_entry_message			// Call the function to display the error
 	b		error_hang							// Hang the processor
 	.endm										// End the macro
@@ -80,6 +80,9 @@ vector_table:
 	vector_table_entry	fiq_invalid_el0_64		// Fast interrupt at el0 64-bit, invalid
 	vector_table_entry	err_invalid_el0_64		// Error interrupt at el0 64-bit, invalid (for now)
 
+
+
+
 // Mask IRQs for all(?) exception levels
 // DAIF - Debug Asynchronous aborts (SError) Irq Fiq
 .global mask_irq
@@ -93,21 +96,25 @@ unmask_irq:
 	msr		daifclr, #2
 	ret
 
-.global irq_vector_init
-irq_vector_init:				// Initialise the vector table
+.global interrupt_vector_table_init
+interrupt_vector_table_init:	// Initialise the vector table
 	adr 	x0, vector_table	// Get the vector table address
 	msr		vbar_el1, x0		// Put the address in the vector base address register
 	ret							// Return
 
-// Functions to handle the vectors
-// Valid exceptions
+
+
+// Valid (handled) exceptions
 
 irq_valid_el1h:				// Normal interrupt at EL1h
 	save_registers			// Save the current registers to the stack
 	bl		handle_irq_el1h	// Branch with link to a C function
 	populate_registers		// Repopulate the registers and exception return
 
-// Invalid exceptions, just call the macro
+
+// Invalid (unhandled) exceptions
+
+// EL1t
 snc_invalid_el1t:
 	handle_invalid_entry	SNC_INVALID_EL1T
 
@@ -121,6 +128,7 @@ err_invalid_el1t:
 	handle_invalid_entry	ERR_INVALID_EL1T
 
 
+// EL1h (what pios currently runs at)
 snc_invalid_el1h:
 	handle_invalid_entry	SNC_INVALID_EL1H
 
@@ -131,6 +139,7 @@ err_invalid_el1h:
 	handle_invalid_entry	ERR_INVALID_EL1H
 
 
+// EL0 32-bit mode
 snc_invalid_el0_32:
 	handle_invalid_entry	SNC_INVALID_EL0_32
 
@@ -144,6 +153,7 @@ err_invalid_el0_32:
 	handle_invalid_entry	ERR_INVALID_EL0_32
 
 
+// EL0 64-bit mode
 snc_invalid_el0_64:
 	handle_invalid_entry	SNC_INVALID_EL0_64
 

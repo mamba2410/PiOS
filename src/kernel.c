@@ -35,8 +35,9 @@ void kernel_main(void){
 	else
 		printf("Unable to query serial\n");
 
+	printf("Initialising interrupts and the system timer\n");
 	// Initialise interrupts and system timer
-	irq_vector_init();
+	interrupt_vector_table_init();
 	system_timer_init();
 	enable_interrupt_controller();
 	unmask_irq();
