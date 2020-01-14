@@ -3,6 +3,7 @@
 ## Bugfixes
 - Add full UART port
 	- Think theres something up with the baud rate
+- Move all addresses in headers to `addresses/<thing>.h` with `#ifndef ADDR_THING_H`
 
 ## Features
 - Interrupts

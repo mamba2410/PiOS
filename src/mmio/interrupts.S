@@ -87,7 +87,7 @@ mask_irq:
 	msr		daifset, #2
 	ret
 
-// Unmask TRQs for all(?) exception levels
+// Unmask IRQs for all(?) exception levels
 .global unmask_irq
 unmask_irq:
 	msr		daifclr, #2

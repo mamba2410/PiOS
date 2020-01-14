@@ -10,6 +10,7 @@
  */
 void handle_irq_el1h(){
 	uint32_t irq = mmio_get32(IRQ_PENDING_1);	// Get the IRQ
+	printf("Made it to handle_irq_el1h\n");
 
 	switch(irq){					// Which IRQ is pending?
 		case SYSTEM_TIMER_IRQ_1:	// If the system timer...
@@ -33,4 +34,5 @@ void show_invalid_entry_message(uint64_t exception_type, uint64_t els, uint64_t 
  */
 void enable_interrupt_controller(){
 	mmio_put32(ENABLE_IRQS_1, SYSTEM_TIMER_IRQ_1);
+	printf("Enabled interrupt controller\n");
 }
