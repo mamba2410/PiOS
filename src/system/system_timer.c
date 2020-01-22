@@ -1,5 +1,6 @@
 #include <system/system_timer.h>
 #include <mmio/mmio.h>
+#include <system/tasks.h>
 
 #include <serial/printf.h>
 
@@ -13,6 +14,8 @@ void handle_system_timer(){
 	current_timer_value += SYSTEM_TIMER_INTERVAL;
 	mmio_put32(TIMER_C1, current_timer_value);
 	mmio_put32(TIMER_CS, TIMER_CS_M1);
+
+	schedule();
 }
 
 /*

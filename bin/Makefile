@@ -134,8 +134,8 @@ $(SYSTEM_OBJ_D)/%_S.o:	$(SYSTEM_SRC_D)/%.S
 $(SYSTEM_OBJ_D)/%_c.o:	$(SYSTEM_SRC_D)/%.c
 	$(CC) $(SYSTEM_CC_FLAGS) -I'$(SYSTEM_INC_D)' -c $< -o $@ 
 
-system: $(SYSTEM_C_OBJ) $(SYSTEM_S_OBJ) $(SYSTEM_INC)
-	$(AR) rcs $(LIB_D)/$(SYSTEM_BIN) $(SYSTEM_C_OBJ) $(SYSTEM_S_OBJ)
+system: $(SYSTEM_C_OBJ) $(SYSTEM_S_OBJ) $(SYSTEM_INC) memory
+	$(AR) rcs $(LIB_D)/$(SYSTEM_BIN) $(SYSTEM_C_OBJ) $(SYSTEM_S_OBJ) $(LIB_D)/$(MEMORY_BIN)
 
 ###########################################################################################################
 # Main recipe
