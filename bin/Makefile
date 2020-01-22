@@ -45,15 +45,15 @@ include $(BUILD_NUMBER_D)/BuildNumber.mak
 #sub: $(SUB_OBJECTS) $(SUB_HEADERS)
 #	$(LD) $(SUB_OBJECTS) $(SUB_LD_FLAGS) -o $(SUB_BIN)
 
-# Memory library, statically linked
-MEMORY_BIN		= libmemory.a
+# Memory module
+MEMORY_BIN		= libmem.a
 MEMORY_CC_FLAGS	= $(GLOBAL_CC_FLAGS) -fPIC
 MEMORY_LD_FLAGS	= $(GLOBAL_LD_FLAGS)
 MEMORY_AS_FLAGS	= $(GLOBAL_AS_FLAGS)
 MEMORY_SRC_D   	= ../src/memory
-MEMORY_INC_D   	= ../include/memory
+MEMORY_INC_D   	= ../include
 MEMORY_OBJ_D   	= ./objects
-MEMORY_C_SR		= $(wildcard $(MEMORY_SRC_D)/*.c)
+MEMORY_C_SRC	= $(wildcard $(MEMORY_SRC_D)/*.c)
 MEMORY_S_SRC	= $(wildcard $(MEMORY_SRC_D)/*.S)
 MEMORY_INC		= $(wildcard $(MEMORY_INC_D)/*.h)
 MEMORY_C_OBJ	= $(patsubst $(MEMORY_SRC_D)/%.c, $(MEMORY_OBJ_D)/%_c.o, $(MEMORY_C_SRC))
@@ -65,10 +65,10 @@ $(MEMORY_OBJ_D)/%_S.o:	$(MEMORY_SRC_D)/%.S
 $(MEMORY_OBJ_D)/%_c.o:	$(MEMORY_SRC_D)/%.c
 	$(CC) $(MEMORY_CC_FLAGS) -I'$(MEMORY_INC_D)' -c $< -o $@ 
 
-memory: $(MEMORY_C_OBJ) $(MEMORY_S_OBJ) $(MEMORY_INC)
+$(MEMORY_BIN): $(MEMORY_C_OBJ) $(MEMORY_S_OBJ) $(MEMORY_INC)
 	$(AR) rcs $(LIB_D)/$(MEMORY_BIN) $(MEMORY_C_OBJ) $(MEMORY_S_OBJ)
 
-# Serial library, statically linked
+# Serial module
 SERIAL_BIN		= libserial.a
 SERIAL_CC_FLAGS	= $(GLOBAL_CC_FLAGS) -fPIC
 SERIAL_LD_FLAGS	= $(GLOBAL_LD_FLAGS)
@@ -88,10 +88,11 @@ $(SERIAL_OBJ_D)/%_S.o:	$(SERIAL_SRC_D)/%.S
 $(SERIAL_OBJ_D)/%_c.o:	$(SERIAL_SRC_D)/%.c
 	$(CC) $(SERIAL_CC_FLAGS) -I'$(SERIAL_INC_D)' -c $< -o $@ 
 
-serial: $(SERIAL_C_OBJ) $(SERIAL_S_OBJ) $(SERIAL_INC)
+$(SERIAL_BIN): $(SERIAL_C_OBJ) $(SERIAL_S_OBJ) $(SERIAL_INC)
 	$(AR) rcs $(LIB_D)/$(SERIAL_BIN) $(SERIAL_C_OBJ) $(SERIAL_S_OBJ)
 
-# MMIO library, statically linked
+
+# MMIO module
 MMIO_BIN		= libmmio.a
 MMIO_CC_FLAGS	= $(GLOBAL_CC_FLAGS) -fPIC
 MMIO_LD_FLAGS	= $(GLOBAL_LD_FLAGS)
@@ -111,10 +112,10 @@ $(MMIO_OBJ_D)/%_S.o:	$(MMIO_SRC_D)/%.S
 $(MMIO_OBJ_D)/%_c.o:	$(MMIO_SRC_D)/%.c
 	$(CC) $(MMIO_CC_FLAGS) -I'$(MMIO_INC_D)' -c $< -o $@ 
 
-mmio: $(MMIO_C_OBJ) $(MMIO_S_OBJ) $(MMIO_INC)
+$(MMIO_BIN): $(MMIO_C_OBJ) $(MMIO_S_OBJ) $(MMIO_INC)
 	$(AR) rcs $(LIB_D)/$(MMIO_BIN) $(MMIO_C_OBJ) $(MMIO_S_OBJ)
 
-# SYSTEM library, statically linked
+# SYSTEM module
 SYSTEM_BIN		= libsystem.a
 SYSTEM_CC_FLAGS	= $(GLOBAL_CC_FLAGS) -fPIC
 SYSTEM_LD_FLAGS	= $(GLOBAL_LD_FLAGS)
@@ -134,8 +135,8 @@ $(SYSTEM_OBJ_D)/%_S.o:	$(SYSTEM_SRC_D)/%.S
 $(SYSTEM_OBJ_D)/%_c.o:	$(SYSTEM_SRC_D)/%.c
 	$(CC) $(SYSTEM_CC_FLAGS) -I'$(SYSTEM_INC_D)' -c $< -o $@ 
 
-system: $(SYSTEM_C_OBJ) $(SYSTEM_S_OBJ) $(SYSTEM_INC) memory
-	$(AR) rcs $(LIB_D)/$(SYSTEM_BIN) $(SYSTEM_C_OBJ) $(SYSTEM_S_OBJ) $(LIB_D)/$(MEMORY_BIN)
+$(SYSTEM_BIN): $(SYSTEM_C_OBJ) $(SYSTEM_S_OBJ) $(SYSTEM_INC)
+	$(AR) rcs $(LIB_D)/$(SYSTEM_BIN) $(SYSTEM_C_OBJ) $(SYSTEM_S_OBJ)
 
 ###########################################################################################################
 # Main recipe
@@ -147,7 +148,8 @@ system: $(SYSTEM_C_OBJ) $(SYSTEM_S_OBJ) $(SYSTEM_INC) memory
 # Do not include extension as theres an object copy neededing to link
 MAIN_BIN		= kernel8
 MAIN_CC_FLAGS	= $(GLOBAL_CC_FLAGS)
-MAIN_LD_FLAGS	= $(GLOBAL_LD_FLAGS) -L'$(LIB_D)' -T linker.ld -lmemory -lserial -lmmio -lsystem
+#MAIN_LD_FLAGS	= $(GLOBAL_LD_FLAGS) -L'$(LIB_D)' -T linker.ld -lserial -lmmio -lmem -lsystem
+MAIN_LD_FLAGS	= -T linker.ld
 MAIN_AS_FLAGS	= $(GLOBAL_AS_FLAGS)
 MAIN_SRC_D    	= ../src
 MAIN_INC_D   	= ../include
@@ -156,9 +158,9 @@ MAIN_C_SRC		= $(wildcard $(MAIN_SRC_D)/*.c)
 MAIN_S_SRC		= $(wildcard $(MAIN_SRC_D)/*.S)
 MAIN_INC	  	= $(wildcard $(MAIN_INC_D)/*.h)
 MAIN_C_OBJ 		= $(patsubst $(MAIN_SRC_D)/%.c, $(MAIN_OBJ_D)/%_c.o, $(MAIN_C_SRC))
-#MAIN_C_OBJ		+= $(MEMORY_C_OBJ) $(SERIAL_C_OBJ) $(MMIO_C_OBJ) $(SYSTEM_C_OBJ)
+MAIN_C_OBJ		+= $(MEMORY_C_OBJ) $(SERIAL_C_OBJ) $(MMIO_C_OBJ) $(SYSTEM_C_OBJ)
 MAIN_S_OBJ		= $(patsubst $(MAIN_SRC_D)/%.S, $(MAIN_OBJ_D)/%_S.o, $(MAIN_S_SRC))
-#MAIN_S_OBJ		+= $(MEMORY_S_OBJ) $(SERIAL_S_OBJ) $(MMIO_S_OBJ) $(SYSTEM_S_OBJ)
+MAIN_S_OBJ		+= $(MEMORY_S_OBJ) $(SERIAL_S_OBJ) $(MMIO_S_OBJ) $(SYSTEM_S_OBJ)
 
 $(MAIN_OBJ_D)/%_S.o:	$(MAIN_SRC_D)/%.S
 	$(AS) $(MAIN_AS_FLAGS) -I'$(MAIN_INC_D)' -c $< -o $@
@@ -166,7 +168,7 @@ $(MAIN_OBJ_D)/%_S.o:	$(MAIN_SRC_D)/%.S
 $(MAIN_OBJ_D)/%_c.o:	$(MAIN_SRC_D)/%.c
 	$(CC) $(MAIN_CC_FLAGS) -I'$(MAIN_INC_D)' -c $< -o $@ 
 
-main: $(MAIN_C_OBJ) $(MAIN_S_OBJ) $(MAIN_INC) linker.ld memory serial mmio system
+main: $(MAIN_C_OBJ) $(MAIN_S_OBJ) $(MAIN_INC) linker.ld $(MEMORY_BIN) $(SERIAL_BIN) $(MMIO_BIN) $(SYSTEM_BIN)
 	$(LD) $(MAIN_C_OBJ) $(MAIN_S_OBJ) $(MAIN_LD_FLAGS) -o $(MAIN_BIN).elf
 	$(TOOLCHAIN_PREFIX)-objcopy $(MAIN_BIN).elf -O binary $(MAIN_BIN).img
 
