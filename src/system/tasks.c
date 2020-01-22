@@ -1,14 +1,17 @@
 #include <system/tasks.h>
 #include <mmio/interrupts.h>
+#include <stdint.h>
+
+#include <serial/printf.h>
 
 static task_t init_task = INIT_TASK_STRUCT;
-task_t *tasks[ MAX_TASKS ] = { &init_task };
-task_t *current_task = &init_task;
 uint32_t number_tasks = 1;
+task_t *current_task = &init_task;
+task_t *tasks[ MAX_TASKS ] = { &init_task, };
+
 
 void preempt_enable() { current_task->can_preempt = 1; }
 void preempt_disable(){ current_task->can_preempt = 0; }
-
 
 /*
  * Called every timeslice, from the timer interrupt
@@ -16,6 +19,7 @@ void preempt_disable(){ current_task->can_preempt = 0; }
  * then do nothing, else schedule tasks with interrupts enabled
  */
 void schedule_tick(){
+	printf("Ticking schedule\n");
 	(current_task->lifetime)--;	// Decrease the current processes lifetime
 	if( (current_task->lifetime > 0) || !(current_task->can_preempt) )	// If it still has life or cannot be switched
 		return;		// Do nothing

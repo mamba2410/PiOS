@@ -7,6 +7,7 @@ AS = $(TOOLCHAIN_PREFIX)-gcc
 LD = $(TOOLCHAIN_PREFIX)-ld
 AR = $(TOOLCHAIM_PREFIX)-ar
 GLOBAL_CC_FLAGS = -ffreestanding -Wall -nostdlib -nostartfiles -mgeneral-regs-only -MMD -fno-stack-protector
+#GLOBAL_CC_FLAGS = -ffreestanding -Wall -nostdlib -nostartfiles -mgeneral-regs-only -MMD
 GLOBAL_AS_FLAGS = -MMD
 GLOBAL_LD_FLAGS =
 LIB_D = ./libs
@@ -47,7 +48,7 @@ include $(BUILD_NUMBER_D)/BuildNumber.mak
 
 # Memory module
 MEMORY_BIN		= libmem.a
-MEMORY_CC_FLAGS	= $(GLOBAL_CC_FLAGS) -fPIC
+MEMORY_CC_FLAGS	= $(GLOBAL_CC_FLAGS)
 MEMORY_LD_FLAGS	= $(GLOBAL_LD_FLAGS)
 MEMORY_AS_FLAGS	= $(GLOBAL_AS_FLAGS)
 MEMORY_SRC_D   	= ../src/memory
@@ -70,7 +71,7 @@ $(MEMORY_BIN): $(MEMORY_C_OBJ) $(MEMORY_S_OBJ) $(MEMORY_INC)
 
 # Serial module
 SERIAL_BIN		= libserial.a
-SERIAL_CC_FLAGS	= $(GLOBAL_CC_FLAGS) -fPIC
+SERIAL_CC_FLAGS	= $(GLOBAL_CC_FLAGS) 
 SERIAL_LD_FLAGS	= $(GLOBAL_LD_FLAGS)
 SERIAL_AS_FLAGS	= $(GLOBAL_AS_FLAGS)
 SERIAL_SRC_D   	= ../src/serial
@@ -94,7 +95,7 @@ $(SERIAL_BIN): $(SERIAL_C_OBJ) $(SERIAL_S_OBJ) $(SERIAL_INC)
 
 # MMIO module
 MMIO_BIN		= libmmio.a
-MMIO_CC_FLAGS	= $(GLOBAL_CC_FLAGS) -fPIC
+MMIO_CC_FLAGS	= $(GLOBAL_CC_FLAGS)
 MMIO_LD_FLAGS	= $(GLOBAL_LD_FLAGS)
 MMIO_AS_FLAGS	= $(GLOBAL_AS_FLAGS)
 MMIO_SRC_D   	= ../src/mmio
@@ -117,7 +118,7 @@ $(MMIO_BIN): $(MMIO_C_OBJ) $(MMIO_S_OBJ) $(MMIO_INC)
 
 # SYSTEM module
 SYSTEM_BIN		= libsystem.a
-SYSTEM_CC_FLAGS	= $(GLOBAL_CC_FLAGS) -fPIC
+SYSTEM_CC_FLAGS	= $(GLOBAL_CC_FLAGS)
 SYSTEM_LD_FLAGS	= $(GLOBAL_LD_FLAGS)
 SYSTEM_AS_FLAGS	= $(GLOBAL_AS_FLAGS)
 SYSTEM_SRC_D   	= ../src/system
@@ -184,7 +185,7 @@ build: main build_number
 # Recipe for cleaning. Removes all objects and binaries
 clean:
 	rm -rf $(MAIN_OBJ_D)/*.o
-	rm -rf $(LIB_D)/*.a
+	rm -rf $(LIB_D)/*
 	[ -f "./$(MAIN_BIN).img" ] && rm $(MAIN_BIN).img
 	[ -f "./$(MAIN_BIN).elf" ] && rm $(MAIN_BIN).elf
 	@echo ""

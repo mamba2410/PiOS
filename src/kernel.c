@@ -21,9 +21,11 @@ void example_process(char *str){
 
 // Main function passed to by boot.S
 void kernel_main(void){
-
 	uart_init();		// Initialise uart
 	printf("Initialised uart!\n");
+
+	//current_task = &init_task;
+	//tasks[0] = &init_task;
 
 	// Get and print exception level
 	uint8_t exception_level;
@@ -55,6 +57,8 @@ void kernel_main(void){
 	enable_interrupt_controller();
 	unmask_irq();
 
+	printf("Interrupts initialised, forking processes\n");
+
 	int8_t result;
 
 	result = create_process( (uint64_t)(&example_process), "abcde" );
@@ -62,6 +66,8 @@ void kernel_main(void){
 	result = create_process( (uint64_t)(&example_process), "12345" );
 	if(result){ printf("Error whilst starting process 2\n"); return; }
 	
+
+	printf("Processes forked, scheduling\n");
 	
 	// Nothing left for the kernel to do, so just schedule other tasks
 	while(1){

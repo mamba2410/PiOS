@@ -44,7 +44,7 @@ typedef struct {
 	cpu_context_t cpu_context;
 	int64_t state;
 	int64_t lifetime;
-	int8_t  can_preempt;
+	int64_t can_preempt;
 	int64_t priority;
 } task_t;
 
@@ -67,8 +67,9 @@ typedef struct {
  * Init task struct
  * All registers are zero, task is running, task has no lifetime left, can preempt, priority 1
  */
-#define INIT_TASK_STRUCT { {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, \
-							TASK_STATE_RUNNING, 0, 1, 1 }
+//#define INIT_TASK_STRUCT { {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, TASK_STATE_RUNNING, 0, 1, 1 }
+#define INIT_CPU_CONTEXT_STRUCT {.x19=0, .x20=0, .x21=0, .x22=0, .x23=0, .x24=0, .x25=0, .x26=0, .x27=0, .x28=0, .fp=0, .pc=0, .sp=0}
+#define INIT_TASK_STRUCT {.cpu_context=INIT_CPU_CONTEXT_STRUCT, .state=TASK_STATE_RUNNING, .lifetime=0, .can_preempt=1, .priority=1}
 
 /*
  * Declare that these variables are declared somewhere else

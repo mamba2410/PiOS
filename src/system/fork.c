@@ -2,7 +2,6 @@
 #include <system/tasks.h>
 #include <memory/mem.h>
 
-
 /*
  * Prepares a new task and adds it to the processes array
  * Does not perform a context switch, only makes a task
@@ -11,7 +10,6 @@ uint8_t create_process(uint64_t func, uint64_t arg){
 	preempt_disable();
 
 	task_t *page;
-
 	page = (task_t*)get_page();			// Get a page for the new process
 	if( !page ) return 1;				// If no page was found
 

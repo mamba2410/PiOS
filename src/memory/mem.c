@@ -5,7 +5,7 @@
 /*
  * Map of all pages, page is either allocated (1) or not allocated (0)
  */
-static uint8_t page_map [ PAGING_PAGES ] = {0};
+static uint8_t page_map [ PAGING_PAGES ] = {0,};
 
 
 /*

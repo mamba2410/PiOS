@@ -1,7 +1,7 @@
 #ifndef FORK_H
 #define FORK_H
 
-#include <system/tasks.h>
+#include <stdint.h>
 
 /*
  * Function definitions
