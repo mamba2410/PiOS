@@ -18,22 +18,28 @@
 _start:
 	mrs		x0, mpidr_el1		// Move processor id from system register to gp register
 	and		x0,	x0,	#0xff		// Test the last byte of the processor id and put it in the compare register
-	//cbz		x0,	el2_entry		// If processor has id zero, go to master
-	cbz		x0, master
-	// If processor id is not zero, continue to infinite loop
-
-processor_hang:					// Infi-loop to hang the processors we don't want
-	b		processor_hang
+	//cbz		x0,	el2_entry	// If processor has id zero, go to master
+	cbz		x0, 1f				// Are we ID zero? if so go 1 forward	
+processor_hang:					// If not, infi-loop
+	b processor_hang			//
+1:
+	mrs		x0, CurrentEL		// Get the current EL
+	cmp		x0, #Current_EL_EL1	// Are we EL1?
+	b.eq	el1_entry			// If so, go to el1_entry
+	cmp		x0, #Current_EL_EL2	// Are we EL2?
+	b.eq	el2_entry			// If so, go to el2_entry
+								// If not, we must be EL3 (or EL0, but meh)
+el3_entry:
+	ldr		x0, =SCR_VALUE		// Load the secure configuration value
+	msr		scr_el3, x0			// Put this into the secure configuration register
+	mov		x0, SPSR_EL3_VALUE	// We want to mask all and go to EL2h
+	msr		spsr_el3, x0		// Put that in the right register
+	adr		x0, el2_entry		// Load address of el2_entry
+	msr		elr_el3, x0			// Exception link is now el2_entry
+	eret						// Exception return, become EL2h and go to el2_entry
 
 el2_entry:
 	msr		SPsel, #1			// Want to use SP_EL{1,2}
-	mrs		x0, CurrentEL		// Get current exception level
-	cmp		x0, #Current_EL_EL2	// Are we EL2?
-	b.eq	1f					// If we are equal, branch forward to label 1 (?)
-	b		el1_entry			// If we aren't equal then go to el1_entry, nothing more to be done
-1:
-	ldr		x0, =SCTLR_VALUE_MMU_DISABLED	// Load the system control flags into x0
-	msr		sctlr_el2, x0		// Put this value in system control register at EL2
 	ldr		x0, =HCR_VALUE		// Load the hypervisor config value
 	msr		hcr_el2, x0			// Put this into the hypervisor configuration register
 	mrs		x0, cnthctl_el2
@@ -44,35 +50,21 @@ el2_entry:
 	msr		vpidr_el2, x0		// Set this at a higher level so that EL1+ will all read the same thing
 	msr		vmpidr_el2, x1		// We won't be virtualising so this doesn't matter really
 	msr		vttbr_el2, xzr		// Store virtual address translation table base as zero, disabling stage 2 translation
-	ldr		x0, =SCTLR_VALUE_MMU_DISABLED
-	msr		sctlr_el1, x0		// Set EL1 system control register
 	mov		x0, #0x33ff
 	msr		cptr_el2, x0		// Disable coprocessors, traps to EL2 (not sure what this does but linux does it)
-	mov		x0, SPSR_VALUE		// Load the saved program status register value
+	mov		x0, SPSR_EL2_VALUE	// Load the saved program status register value
 	msr		spsr_el2, x0		// Put the spsr value in the register
 	adr		x0, el1_entry		// Load the el1_entry address to x0
 	msr		elr_el2, x0			// Load the exception link register with the address
 	eret						// Change exception level and branch to location in elr_el2
 
-master:							// Master label, branched to by processor we want
-	ldr		x0, =SCTLR_VALUE_MMU_DISABLED	// Load the system control flags into x0
-	msr		sctlr_el1, x0		// Put this value in system control register
-	ldr		x0, =HCR_VALUE		// Load the hypervisor config value
-	msr		hcr_el2, x0			// Put this into the hypervisor configuration register
-	ldr		x0, =SCR_VALUE		// Load the secure configuration value
-	msr		scr_el3, x0			// Put this into the secure configuration register
-	ldr		x0, =SPSR_VALUE		// Load the desired program status value
-	msr		spsr_el3, x0		// Put into the saved program status register
-	adr		x0, el1_entry		// Put address of el1_entry into x0
-	msr		elr_el3, x0			// Put this into exception link register
-	eret						// Return to where the exception registers say
-
 el1_entry:						// Code to be run after processor enters exception level 1
+	ldr		x0, =SCTLR_VALUE_MMU_DISABLED
+	msr		sctlr_el1, x0
 	adr		x0,	bss_begin		// Load bss_begin address
 	adr 	x1,	bss_end			// Load bss_end address
 	sub		x1,	x1,	x0			// x1 = bss_size = bss_end - bss_start
 	bl		zero_memory			// Branch with link to zero out the memory
-	
 	mov		sp,	#LOW_MEMORY		// Move stack pointer to the low memory location, 4M should be enough since kernel is tiny
 	bl		kernel_main			// Branch to kernel_main, defined in a c file
 
