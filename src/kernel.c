@@ -3,14 +3,29 @@
 #include <mmio/mailbox.h>
 #include <mmio/interrupts.h>
 #include <system/system_timer.h>
+#include <system/tasks.h>
+#include <system/fork.h>
 
 extern uint8_t get_exception_level();
 
+
+// Just repeatedly print the first 5 characters of a given string
+void example_process(char *str){
+	while(1){
+		for(uint8_t i = 0; i < 5; i++){
+			uart_putc(str[i]);
+			mmio_delay(1e5);
+		}
+	}
+}
+
 // Main function passed to by boot.S
 void kernel_main(void){
-
 	uart_init();		// Initialise uart
 	printf("Initialised uart!\n");
+
+	//current_task = &init_task;
+	//tasks[0] = &init_task;
 
 	// Get and print exception level
 	uint8_t exception_level;
@@ -41,13 +56,22 @@ void kernel_main(void){
 	system_timer_init();
 	enable_interrupt_controller();
 	unmask_irq();
+
+	printf("Interrupts initialised, forking processes\n");
+
+	int8_t result;
+
+	result = create_process( (uint64_t)(&example_process), "abcde" );
+	if(result){ printf("Error whilst starting process 1\n"); return; }
+	result = create_process( (uint64_t)(&example_process), "12345" );
+	if(result){ printf("Error whilst starting process 2\n"); return; }
 	
+
+	printf("Processes forked, starting schedule loop\n");
 	
-	// Go into an echo loop
-	printf("Echoing\n");
+	// Nothing left for the kernel to do, so just schedule other tasks
 	while(1){
-		uart_putc( uart_getc() );
-		
+		schedule();
 	}
 
 	

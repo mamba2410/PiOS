@@ -18,8 +18,9 @@
 _start:
 	mrs		x0, mpidr_el1		// Move processor id from system register to gp register
 	and		x0,	x0,	#0xff		// Test the last byte of the processor id and put it in the compare register
-	cbz		x0,	el2_entry		// If processor has id zero, go to master
-								// If processor id is not zero, continue to infinite loop
+	//cbz		x0,	el2_entry		// If processor has id zero, go to master
+	cbz		x0, master
+	// If processor id is not zero, continue to infinite loop
 
 processor_hang:					// Infi-loop to hang the processors we don't want
 	b		processor_hang
@@ -53,7 +54,6 @@ el2_entry:
 	msr		elr_el2, x0			// Load the exception link register with the address
 	eret						// Change exception level and branch to location in elr_el2
 
-/*
 master:							// Master label, branched to by processor we want
 	ldr		x0, =SCTLR_VALUE_MMU_DISABLED	// Load the system control flags into x0
 	msr		sctlr_el1, x0		// Put this value in system control register
@@ -66,7 +66,6 @@ master:							// Master label, branched to by processor we want
 	adr		x0, el1_entry		// Put address of el1_entry into x0
 	msr		elr_el3, x0			// Put this into exception link register
 	eret						// Return to where the exception registers say
-*/
 
 el1_entry:						// Code to be run after processor enters exception level 1
 	adr		x0,	bss_begin		// Load bss_begin address

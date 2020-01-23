@@ -13,6 +13,7 @@
 	- MMIO (required for serial)
 - Multi-core (for now)
 - Processes
+	- Process scheduling
 	- User level
 	- Kernel level
 	- Process forking etc
@@ -35,4 +36,5 @@
 	- Program launching
 	- Output pipes
 	- Scripts / language
+- Custom filesystem?
 - Custom WM, DE

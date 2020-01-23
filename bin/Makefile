@@ -6,6 +6,7 @@ CC = $(TOOLCHAIN_PREFIX)-gcc
 AS = $(TOOLCHAIN_PREFIX)-gcc
 LD = $(TOOLCHAIN_PREFIX)-ld
 GLOBAL_CC_FLAGS = -ffreestanding -Wall -nostdlib -nostartfiles -mgeneral-regs-only -MMD -fno-stack-protector
+#GLOBAL_CC_FLAGS = -ffreestanding -Wall -nostdlib -nostartfiles -mgeneral-regs-only -MMD
 GLOBAL_AS_FLAGS = -MMD
 GLOBAL_LD_FLAGS =
 LIB_D = ./libs
@@ -44,8 +45,8 @@ include $(BUILD_NUMBER_D)/BuildNumber.mak
 #sub: $(SUB_OBJECTS) $(SUB_HEADERS)
 #	$(LD) $(SUB_OBJECTS) $(SUB_LD_FLAGS) -o $(SUB_BIN)
 
-# Memory library, statically linked
-MEMORY_BIN		= libmemory.o
+# Memory module
+MEMORY_BIN		= libmem.a
 MEMORY_CC_FLAGS	= $(GLOBAL_CC_FLAGS)
 MEMORY_LD_FLAGS	= $(GLOBAL_LD_FLAGS)
 MEMORY_AS_FLAGS	= $(GLOBAL_AS_FLAGS)
@@ -66,9 +67,9 @@ $(MEMORY_OBJ_D)/%_c.o:	$(MEMORY_SRC_D)/%.c
 
 memory: $(MEMORY_C_OBJ) $(MEMORY_A_OBJ) $(MEMORY_INC)
 
-# Serial library, statically linked
-SERIAL_BIN		= libserial.o
-SERIAL_CC_FLAGS	= $(GLOBAL_CC_FLAGS)
+# Serial module
+SERIAL_BIN		= libserial.a
+SERIAL_CC_FLAGS	= $(GLOBAL_CC_FLAGS) 
 SERIAL_LD_FLAGS	= $(GLOBAL_LD_FLAGS)
 SERIAL_AS_FLAGS	= $(GLOBAL_AS_FLAGS)
 SERIAL_SRC_D   	= ../src/serial
@@ -89,8 +90,9 @@ $(SERIAL_OBJ_D)/%_c.o:	$(SERIAL_SRC_D)/%.c
 serial: $(SERIAL_C_OBJ) $(SERIAL_A_OBJ) $(SERIAL_INC)
 	@echo $(SERIAL_C_OBJ)
 
-# MMIO library, statically linked
-MMIO_BIN		= libmmio.o
+
+# MMIO module
+MMIO_BIN		= libmmio.a
 MMIO_CC_FLAGS	= $(GLOBAL_CC_FLAGS)
 MMIO_LD_FLAGS	= $(GLOBAL_LD_FLAGS)
 MMIO_AS_FLAGS	= $(GLOBAL_AS_FLAGS)
@@ -112,8 +114,8 @@ $(MMIO_OBJ_D)/%_c.o:	$(MMIO_SRC_D)/%.c
 mmio: $(MMIO_C_OBJ) $(MMIO_A_OBJ) $(MMIO_INC)
 	@echo $(MMIO_C_OBJ)
 
-# SYSTEM library, statically linked
-SYSTEM_BIN		= libsystem.o
+# SYSTEM module
+SYSTEM_BIN		= libsystem.a
 SYSTEM_CC_FLAGS	= $(GLOBAL_CC_FLAGS)
 SYSTEM_LD_FLAGS	= $(GLOBAL_LD_FLAGS)
 SYSTEM_AS_FLAGS	= $(GLOBAL_AS_FLAGS)
@@ -132,8 +134,8 @@ $(SYSTEM_OBJ_D)/%_S.o:	$(SYSTEM_SRC_D)/%.S
 $(SYSTEM_OBJ_D)/%_c.o:	$(SYSTEM_SRC_D)/%.c
 	$(CC) $(SYSTEM_CC_FLAGS) -I'$(SYSTEM_INC_D)' -c $< -o $@ 
 
-system: $(SYSTEM_C_OBJ) $(SYSTEM_A_OBJ) $(SYSTEM_INC)
-	@echo $(SYSTEM_C_OBJ)
+system: $(SYSTEM_C_OBJ) $(SYSTEM_S_OBJ) $(SYSTEM_INC) memory
+	$(AR) rcs $(LIB_D)/$(SYSTEM_BIN) $(SYSTEM_C_OBJ) $(SYSTEM_S_OBJ) $(LIB_D)/$(MEMORY_BIN)
 
 ###########################################################################################################
 # Main recipe
@@ -180,6 +182,7 @@ build: main build_number
 # Recipe for cleaning. Removes all objects and binaries
 clean:
 	rm -rf $(MAIN_OBJ_D)/*.o
+	rm -rf $(LIB_D)/*
 	[ -f "./$(MAIN_BIN).img" ] && rm $(MAIN_BIN).img
 	[ -f "./$(MAIN_BIN).elf" ] && rm $(MAIN_BIN).elf
 	@echo ""

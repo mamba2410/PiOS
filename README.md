@@ -8,18 +8,18 @@ For now, just using pi3, but have plans to port it to pi1 or pi0 etc.
 The hard work should already be done once the pi3 works.
 
 ## Resources
-[osdev wiki](https://wiki.osdev.org/ARM_RaspberryPi_Tutorial_C)
-[btzsrc github](https://github.com/bztsrc/raspi3-tutorial)
-[s-matyukevich github](https://github.com/s-matyukevich/raspberry-pi-os)
-[jsandler](https://jsandler18.github.io/)
-[dwelch](https://github.com/dwelch67/raspberrypi)
+- [osdev wiki](https://wiki.osdev.org/ARM_RaspberryPi_Tutorial_C)
+- [btzsrc github](https://github.com/bztsrc/raspi3-tutorial)
+- [s-matyukevich github](https://github.com/s-matyukevich/raspberry-pi-os)
+- [jsandler github](https://jsandler18.github.io/)
+- [dwelch github](https://github.com/dwelch67/raspberrypi)
 
-[BCM2837 ARM Peripherals Manual](https://github.com/raspberrypi/documentation/files/1888662/BCM2837-ARM-Peripherals.-.Revised.-.V2-1.pdf)
-[ARMv8-A Instruction Set Architecture](https://developer.arm.com/architectures/learn-the-architecture/armv8-a-instruction-set-architecture)
-[ARM Cortex-A Programmers Guide](https://developer.arm.com/docs/den0024/latest)
-[NEON Architecture](https://developer.arm.com/architectures/instruction-sets/simd-isas/neon)
+- [BCM2837 ARM Peripherals Manual](https://github.com/raspberrypi/documentation/files/1888662/BCM2837-ARM-Peripherals.-.Revised.-.V2-1.pdf)
+- [ARMv8-A Instruction Set Architecture](https://developer.arm.com/architectures/learn-the-architecture/armv8-a-instruction-set-architecture)
+- [ARM Cortex-A Programmers Guide](https://developer.arm.com/docs/den0024/latest)
+- [NEON Architecture](https://developer.arm.com/architectures/instruction-sets/simd-isas/neon)
 
-[Information on linker scripts](https://sourceware.org/binutils/docs/ld/Scripts.html#Scripts)
+- [Information on linker scripts](https://sourceware.org/binutils/docs/ld/Scripts.html#Scripts)
 
 ## Testing
 Test this with either qemu or actual hardware.
@@ -30,8 +30,16 @@ For the `pi3` branch, use
 ```
 qemu-system-aarch64 -M raspi3 -kernel bin/kernel8.img -display none -serial null -serial stdio
 ```
+This emulates a Raspberry Pi 3 SoC with the specified kernel.
 
-For a system that emulates a pi 3 with the 64-bit kernel, has no window (uses stdio) and redirects uart0 to null and uart1 (mini uart) to stdio.
+The first `-serial` flag is for the default `UART0` port, the second is for the auxiliary `UART1` or mini uart port.
+Both cannot be on `stdio`.
+
+There will be no display, there are currently no plans to add video display to this kernel. 
+It would be a long ways off.
+
+There is no hard drive for this, as well as next to no peripherals.
+The system timer interrupts do not work for instance.
 
 ### Hardware
 Connect up a USB-to-TTL cable to the pc and raspi.
@@ -41,10 +49,16 @@ On the pi 3B the pins should all be next to each other, 3 in a row.
 
 Connect both ends of the USB-to-TTl cable whilst the pi is off.
 ```
-sudo screen /dev/ttyUSB0 115200
+screen /dev/ttyUSB0 115200
 ```
-or exchange it for the serial port and baud rate as needed.
+Exchange it for the serial port and baud rate as needed.
 Once screen is up, power on the pi and go for it, you should see serial output.
+
+Make sure the user is in the `dialout` group, you may need to restart to take effect.
+You might also need to kill `screen` with
+```
+killall screen
+```
 
 Tip: exit `screen` with `C-a + z`.
 
