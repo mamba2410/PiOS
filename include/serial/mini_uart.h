@@ -21,7 +21,6 @@
 #define SYS_CLOCK_FREQ		250e6									// System clock frequency is 250MHz
 #define BAUD_RATE			115200									// Chosen baud rate
 #define BAUD_RATE_REG_VAL	(uint32_t)(SYS_CLOCK_FREQ/(8 * BAUD_RATE) - 1)	// Calculate the register value for the baud rate
-//#define BAUD_RATE_REG_VAL	270
 
 void	mini_uart_init();			// Initialise mini uart
 

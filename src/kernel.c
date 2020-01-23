@@ -59,6 +59,8 @@ void kernel_main(void){
 
 	printf("Interrupts initialised, forking processes\n");
 
+	printf("IBRD:%08x\tFBRD:%08x\n", IBRD_VALUE, FBRD_VALUE);
+
 	int8_t result;
 
 	result = create_process( (uint64_t)(&example_process), "abcde" );

@@ -24,6 +24,20 @@
 #define UART0_ITOP  	((uint64_t*)(UART0_BASE + 0x88))
 #define UART0_TDR   	((uint64_t*)(UART0_BASE + 0x8C))
 
+
+#define UART0_CLOCK			3e6			// 3MHz
+#define BAUD_RATE			115200
+#define BAUD_RATE_DIVIDER	( (double)UART0_CLOCK/(16.0 * BAUD_RATE) )
+#define BAUD_RATE_FRACTION	( (BAUD_RATE_DIVIDER-IBRD_VALUE)*64.0 + 0.5 )
+
+#define IBRD_VALUE			(uint32_t)(BAUD_RATE_DIVIDER)
+#define FBRD_VALUE			(uint32_t)(BAUD_RATE_FRACTION)
+#define LCRH_VALUE			((1<<4)|(3<<5))			// Enable FIFO, 8-bit word length
+#define  ICR_VALUE			(0x7F2)
+#define IMSC_VALUE			(0x7F2)					// Mask all interrupts, some bits are unsupported
+#define   CR_VALUE			((1<<0)|(1<<8)|(1<<9))	// Enable UART, RX and TX
+
+
 void  uart0_init();			// Initialise uart0
 
 void  uart0_putc(char);		// Put character onto uart0
