@@ -1,10 +1,13 @@
 # TODO
 
 ## Bugfixes
-- Add full UART port
-	- Think theres something up with the baud rate
 - Move all addresses in headers to `addresses/<thing>.h` with `#ifndef ADDR_THING_H`
 - Get things to link with static libraries
+- Fix UART0
+	- Baud rate is fine
+	- Registers are being set fine
+	- Code example from github doesn't work, maybe it's hardware? (unlikely)
+	- Is it being initialised okay?
 
 ## Features
 - Interrupts

@@ -6,6 +6,7 @@
 
 extern volatile uint32_t mailbox[36];
 
+// Magic numbers
 #define MBOX_REQUEST	0
 
 // Channels
@@ -21,6 +22,7 @@ extern volatile uint32_t mailbox[36];
 
 // Tags
 #define MBOX_TAG_GETSERIAL	0x10004
+#define MBOX_TAG_SETCLK		0x38002
 #define MBOX_TAG_LAST		0
 
 
