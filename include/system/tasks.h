@@ -1,6 +1,9 @@
 #ifndef TASKS_H
 #define TASKS_H
 
+#define CPU_CONTEXT_OFFSET	0		// cpu_context is the first member of task_t, so has no offset
+
+#ifndef __ASSEMBLER__
 #include <stdint.h>
 
 /*
@@ -27,8 +30,14 @@ typedef struct {
 	uint64_t x26;
 	uint64_t x27;
 	uint64_t x28;
+	union{
 	uint64_t fp;	// x29, frame pointer
+	uint64_t x29;
+	};
+	union{
 	uint64_t pc;	// x30, program counter / link register
+	uint64_t x30;
+	};
 	uint64_t sp;	//		stack pointer
 } cpu_context_t;
 
@@ -48,40 +57,23 @@ typedef struct {
 	int64_t priority;
 } task_t;
 
-
-/*
- * Task states
- */
-#define TASK_STATE_HALTED	0
-#define TASK_STATE_RUNNING	1
-#define TASK_STATE_WAITING_INTERRUPT	2
-
-
-/*
- * Maximum number of tasks available
- */
-#define MAX_TASKS 64
-
-
-/*
- * Init task struct
- * All registers are zero, task is running, task has no lifetime left, can preempt, priority 1
- */
-//#define INIT_TASK_STRUCT { {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, TASK_STATE_RUNNING, 0, 1, 1 }
+// Init task definition
 #define INIT_CPU_CONTEXT_STRUCT {.x19=0, .x20=0, .x21=0, .x22=0, .x23=0, .x24=0, .x25=0, .x26=0, .x27=0, .x28=0, .fp=0, .pc=0, .sp=0}
 #define INIT_TASK_STRUCT {.cpu_context=INIT_CPU_CONTEXT_STRUCT, .state=TASK_STATE_RUNNING, .lifetime=0, .can_preempt=1, .priority=1}
 
-/*
- * Declare that these variables are declared somewhere else
- */
+
+// Task states
+#define TASK_STATE_HALTED				0
+#define TASK_STATE_RUNNING				1
+#define TASK_STATE_WAITING_INTERRUPT	2
+
+#define MAX_TASKS 64	// Maximum number of tasks can handle
+
+// Declare these global variables
 extern task_t *current_task;
 extern task_t *tasks[MAX_TASKS];
 extern uint32_t number_tasks;
 
-
-/*
- * Function definitions
- */
 void preempt_enable();
 void preempt_disable();
 void schedule();
@@ -89,5 +81,6 @@ void schedule_tick();
 void switch_task(task_t*);
 extern void cpu_switch_task(task_t*, task_t*);
 
+#endif /* __ASSEMBLER */
 
 #endif /* TASKS_H */

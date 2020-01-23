@@ -1,7 +1,10 @@
-#include <serial/uart0.h>
-#include <mmio/mmio.h>
 #include <stdint.h>
+#include <addresses/gpio.h>
+#include <addresses/uart0.h>
 #include <mmio/mailbox.h>
+#include <mmio/mmio.h>
+#include <serial/baud_rate.h>
+#include <serial/uart0.h>
 
 /*
  * Initialise the uart0 line

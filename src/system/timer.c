@@ -1,8 +1,8 @@
-#include <system/system_timer.h>
+#include <stdint.h>
+#include <addresses/timer.h>
 #include <mmio/mmio.h>
 #include <system/tasks.h>
-
-#include <serial/printf.h>
+#include <system/timer.h>
 
 static const uint32_t SYSTEM_TIMER_INTERVAL = 200000;
 static uint32_t current_timer_value = 0;
@@ -26,3 +26,4 @@ void system_timer_init(){
 	current_timer_value += SYSTEM_TIMER_INTERVAL;
 	mmio_put32(TIMER_C1, current_timer_value);
 }
+

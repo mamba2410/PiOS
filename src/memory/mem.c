@@ -1,5 +1,4 @@
 #include <memory/mem.h>
-#include <memory/mem_values.h>
 #include <stdint.h>
 
 /*

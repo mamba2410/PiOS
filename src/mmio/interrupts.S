@@ -1,9 +1,9 @@
-#include <mmio/interrupt_values.h>
+#include <mmio/interrupts.h>
 
 	.macro vector_table_entry	vector_label	// Define a macro to handle adding vector entries
-	.align	7					// Vectors need to be offset 0x80 from each other
-	b		\vector_label		// Immediately branch to new location since we only have 0x80 bytes of code to play with here
-	.endm						// End the macro
+	.align	7									// Vectors need to be offset 0x80 from each other
+	b		\vector_label						// Immediately branch to new location since we only have 0x80 bytes of code to play with here
+	.endm										// End the macro
 
 	.macro handle_invalid_entry	type			// Macro to handle interrupts we don't care about. Using macros to leave registers untouched
 	save_registers								// Macro to save the processor state
@@ -89,18 +89,13 @@ vector_table:
 	vector_table_entry	err_invalid_el0_64		// Error interrupt at el0 64-bit, invalid (for now)
 
 
-
-
-// Mask IRQs for all(?) exception levels
-// DAIF - Debug Asynchronous aborts (SError) Irq Fiq
 .global mask_irq
-mask_irq:
-	msr		daifset, #2
+mask_irq:					// Mask IRQs for all exception levels 
+	msr		daifset, #2		// DAIF - Debug Asynchronous Irq Frq
 	ret
 
-// Unmask IRQs for all(?) exception levels
 .global unmask_irq
-unmask_irq:
+unmask_irq:					// Unmask IRQs for all exception levels
 	msr		daifclr, #2
 	ret
 
