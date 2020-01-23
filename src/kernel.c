@@ -67,7 +67,7 @@ void kernel_main(void){
 	if(result){ printf("Error whilst starting process 2\n"); return; }
 	
 
-	printf("Processes forked, scheduling\n");
+	printf("Processes forked, starting schedule loop\n");
 	
 	// Nothing left for the kernel to do, so just schedule other tasks
 	while(1){

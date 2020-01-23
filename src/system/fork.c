@@ -21,7 +21,7 @@ uint8_t create_process(uint64_t func, uint64_t arg){
 	page->cpu_context.x19 = func;		// Set registers for the task
 	page->cpu_context.x20 = arg;
 	page->cpu_context.pc  = (uint64_t)ret_from_fork;
-	page->cpu_context.sp  = ((uint64_t)page + PAGE_SIZE);
+	page->cpu_context.sp  = (uint64_t)page + PAGE_SIZE;
 
 	tasks[ number_tasks++ ] = page;		// Put this task in the array and increment the number
 

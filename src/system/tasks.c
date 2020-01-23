@@ -2,8 +2,6 @@
 #include <mmio/interrupts.h>
 #include <stdint.h>
 
-#include <serial/printf.h>
-
 static task_t init_task = INIT_TASK_STRUCT;
 uint32_t number_tasks = 1;
 task_t *current_task = &init_task;
@@ -19,14 +17,14 @@ void preempt_disable(){ current_task->can_preempt = 0; }
  * then do nothing, else schedule tasks with interrupts enabled
  */
 void schedule_tick(){
-	printf("Ticking schedule\n");
-	(current_task->lifetime)--;	// Decrease the current processes lifetime
+	current_task->lifetime--;	// Decrease the current processes lifetime
+
 	if( (current_task->lifetime > 0) || !(current_task->can_preempt) )	// If it still has life or cannot be switched
 		return;		// Do nothing
 
-	mask_irq();			// Else, enable interrupts (we are inside an interrupt already)
+	unmask_irq();		// Else, enable interrupts (we are inside an interrupt already)
 	schedule();			// schedule the tasks
-	unmask_irq();		// disable interrupts again
+	mask_irq();			// disable interrupts again
 }
 
 
@@ -60,8 +58,9 @@ void schedule(){
 		
 		for(uint32_t i = 0; i < MAX_TASKS; i++){	// For all tasks...
 			task = tasks[i];
-			if(task)
+			if(task){
 				task->lifetime = (task->lifetime >> 1) + task->priority;
+			}
 				// Increase the task lifetime, making sure it does not exceed 2*priority
 		}
 
@@ -82,6 +81,6 @@ void switch_task(task_t *task){
 	task_t *prev = current_task;			// Keep track of the old task
 	current_task = task;					// Current task is now the new task
 
-	cpu_switch_task(prev, current_task);	// Do the switch
+	cpu_switch_task(prev, task);	// Do the switch
 }
 

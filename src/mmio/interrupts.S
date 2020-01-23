@@ -31,15 +31,15 @@
 	stp		x24, x25, [sp, #0x10 * 12]
 	stp		x26, x27, [sp, #0x10 * 13]
 	stp		x28, x29, [sp, #0x10 * 14]
-	str		x30, 	  [sp, #0x10 * 15]			// Do this for all general putpose registers. Add more as needed
+	str		x30, 	  [sp, #0x10 * 16]			// Do this for all general putpose registers. Add more as needed
 
 	mrs		x22, elr_el1
 	mrs		x23, spsr_el1
-	stp		x22, x23, [sp, #0x10 * 15 + 0x08]	// Store exception registers as well, half offset because I want to keep registers in order
+	stp		x22, x23, [sp, #0x10 * 15]	// Store exception registers as well, half offset because I want to keep registers in order
 	.endm
 
 	.macro populate_registers					// Repopulate registers after handling an interrupt
-	ldp		x22, x23, [sp, #0x10 * 15 + 0x08]
+	ldp		x22, x23, [sp, #0x10 * 15]
 	msr		elr_el1, x22
 	msr		spsr_el1, x23						// Restore exception registers
 
@@ -58,8 +58,9 @@
 	ldp		x24, x25, [sp, #0x10 * 12]
 	ldp		x26, x27, [sp, #0x10 * 13]
 	ldp		x28, x29, [sp, #0x10 * 14]
-	ldr		x30, 	  [sp, #0x10 * 15]			// Do this for all general putpose registers. Add more as needed
+	ldr		x30, 	  [sp, #0x10 * 16]			// Do this for all general putpose registers. Add more as needed
 	add		sp, sp, #REGISTER_FRAME_SIZE		// Move the stack pointer back up
+	eret
 	.endm
 
 
