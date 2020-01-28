@@ -1,7 +1,6 @@
 # TODO
 
 ## Bugfixes
-- Get things to link with static libraries
 - Fix UART0
 	- Baud rate is fine
 	- Registers are being set fine
