@@ -7,8 +7,8 @@
  * User config
  */
 #define NEWLINE_CARRIAGE_RETURN		// Should printf add a carriage return to newlines?
-#define PRINTF_MINI_UART			// printf uses mini uart device
-//#define PRINTF_UART0				// printf uses full uart device
+//#define PRINTF_MINI_UART			// printf uses mini uart device
+#define PRINTF_UART0				// printf uses full uart device
 
 /*
  * C stuff
