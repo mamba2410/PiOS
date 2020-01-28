@@ -1,5 +1,4 @@
-// TODO MOVE ME
-#define CPU_CONTEXT_OFFSET 0			// cpu_context is the first member if task_t
+#include <system/tasks.h>
 
 .global cpu_switch_task
 cpu_switch_task:

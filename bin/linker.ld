@@ -3,6 +3,8 @@
  * Define the sections in this object
  */
 SECTIONS{
+	/* Code is loaded at 0x80000 */
+	. = 0x80000;	
 	/* Have a boot section for boot code. */
 	.text.boot	: { *(.text.boot) }
 	/* Have a general code section */

@@ -1,5 +1,8 @@
-#include <serial/mini_uart.h>
+#include <addresses/gpio.h>
+#include <addresses/mini_uart.h>
 #include <mmio/mmio.h>
+#include <serial/baud_rate.h>
+#include <serial/mini_uart.h>
 
 /*
  * Initialise mini uart for io
@@ -24,7 +27,7 @@ void mini_uart_init(){
 	mmio_put32(AUX_MU_IER_REG, 0);		// Disable rx/tx interrupts
 	mmio_put32(AUX_MU_LCR_REG, 3);		// Enable 8-bit mode
 	mmio_put32(AUX_MU_MCR_REG, 0);		// Set RTS line always high
-	mmio_put32(AUX_MU_BAUD_REG, BAUD_RATE_REG_VAL);	// Set baud rate to 115200
+	mmio_put32(AUX_MU_BAUD_REG, MINI_UART_REG_VAL);	// Set baud rate to 115200
 
 	mmio_put32(AUX_MU_CNTL_REG, 3);		// Enable rx/tx
 }

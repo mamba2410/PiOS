@@ -1,27 +1,22 @@
 #include <memory/mem.h>
-#include <system/arm_system_registers.h>
+#include <system/sysregs.h>
 
-// Tells the linker to put everything here in the .text.boot section
-.section ".text.boot"
-
-/*
- * Note:	x<n> is a 64-bit register
- *			w<n> is the lower 32-bits of x<n>
- */
+.section ".text.boot"			// Put all of this in .text.boot
 
 /*
  * All processor cores run this code, so need to handle it differently for each one
  * otherwise the code will be run 4 times and the serial registers might mess up
  */
- 	//.org	0x80000
+//.org	0x80000					// This code is running at 0x80000 (or 0x00000 if kernel_old is enabled in config.txt)
 .global 	_start
 _start:
 	mrs		x0, mpidr_el1		// Move processor id from system register to gp register
 	and		x0,	x0,	#0xff		// Test the last byte of the processor id and put it in the compare register
-	//cbz		x0,	el2_entry	// If processor has id zero, go to master
 	cbz		x0, 1f				// Are we ID zero? if so go 1 forward	
+
 processor_hang:					// If not, infi-loop
 	b processor_hang			//
+
 1:
 	mrs		x0, CurrentEL		// Get the current EL
 	cmp		x0, #Current_EL_EL1	// Are we EL1?
@@ -29,6 +24,7 @@ processor_hang:					// If not, infi-loop
 	cmp		x0, #Current_EL_EL2	// Are we EL2?
 	b.eq	el2_entry			// If so, go to el2_entry
 								// If not, we must be EL3 (or EL0, but meh)
+
 el3_entry:
 	ldr		x0, =SCR_VALUE		// Load the secure configuration value
 	msr		scr_el3, x0			// Put this into the secure configuration register

@@ -1,3 +1,4 @@
+#include <addresses/mailbox.h>
 #include <mmio/mailbox.h>
 #include <mmio/mmio.h>
 
@@ -33,12 +34,12 @@ volatile uint32_t __attribute__((aligned(16))) mailbox[36];
 uint8_t mailbox_call(uint8_t c){
 	uint32_t r = ( (uint64_t)(&mailbox)&(~0xF) ) | (c&0xF);
 
-	while( mmio_get32(MBOX_STATUS) & MBOX_FULL );
-	mmio_put32(MBOX_WRITE, r);
+	while( mmio_get32(MBOX_REG_STATUS) & MBOX_FULL );
+	mmio_put32(MBOX_REG_WRITE, r);
 
 	while(1){
-		while( mmio_get32(MBOX_STATUS) & MBOX_EMPTY );
-		if( r == mmio_get32(MBOX_READ) ) return mailbox[1] != MBOX_RESPONSE;
+		while( mmio_get32(MBOX_REG_STATUS) & MBOX_EMPTY );
+		if( r == mmio_get32(MBOX_REG_READ) ) return mailbox[1] != MBOX_RESPONSE;
 	}
 
 	return 1;

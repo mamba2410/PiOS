@@ -1,13 +1,17 @@
-#include <system/tasks.h>
-#include <mmio/interrupts.h>
 #include <stdint.h>
+#include <mmio/interrupts.h>
+#include <system/tasks.h>
 
+// Global variables
 static task_t init_task = INIT_TASK_STRUCT;
 uint32_t number_tasks = 1;
 task_t *current_task = &init_task;
 task_t *tasks[ MAX_TASKS ] = { &init_task, };
 
 
+/*
+ * Enable and disable preemption
+ */
 void preempt_enable() { current_task->can_preempt = 1; }
 void preempt_disable(){ current_task->can_preempt = 0; }
 
@@ -22,9 +26,9 @@ void schedule_tick(){
 	if( (current_task->lifetime > 0) || !(current_task->can_preempt) )	// If it still has life or cannot be switched
 		return;		// Do nothing
 
-	unmask_irq();		// Else, enable interrupts (we are inside an interrupt already)
-	schedule();			// schedule the tasks
-	mask_irq();			// disable interrupts again
+	unmask_irq();	// Else, enable interrupts (we are inside an interrupt already)
+	schedule();		// schedule the tasks
+	mask_irq();		// disable interrupts again
 }
 
 
@@ -35,7 +39,7 @@ void schedule_tick(){
 void schedule(){
 	current_task->lifetime = 0;	// Current process now has no lifetime as it is switching
 
-	preempt_disable();		// Disable preemption for the current task (we are already switching)
+	preempt_disable();			// Disable preemption for the current task (we are already switching)
 	int64_t next_task, next_task_lifetime;
 	task_t *task;
 
@@ -59,9 +63,9 @@ void schedule(){
 		for(uint32_t i = 0; i < MAX_TASKS; i++){	// For all tasks...
 			task = tasks[i];
 			if(task){
+				// Increase the task lifetime, making sure it does not exceed 2*priority
 				task->lifetime = (task->lifetime >> 1) + task->priority;
 			}
-				// Increase the task lifetime, making sure it does not exceed 2*priority
 		}
 
 	}

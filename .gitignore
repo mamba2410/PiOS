@@ -1,3 +1,4 @@
+bin/boot/kernel8.img
 bin/objects/*
 bin/kernel8.*
 bin/metadata/*
