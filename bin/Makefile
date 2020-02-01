@@ -23,29 +23,6 @@ include $(BUILD_NUMBER_D)/BuildNumber.mak
 # Subdirectory recipes
 ###########################################################################################################
 
-# This is for things like in-house libraries
-# For example, if code for the library libsub.so is in
-# the same source as this, and main needs it
-#
-# Example of adding a subdirectory that compiles to a shared object
-# Should probably put user-generated library files in different directory
-
-#SUB_BIN = $(LIB_D)/libsub.so
-#SUB_LD_FLAGS = $(GLOBAL_LD_FLAGS) -shared
-#SUB_CC_FLAGS = $(GLOBAL_CC_FLAGS) -fPIC
-#SUB_SRC_D    = $(MAIN_OBJ_D)/sub
-#SUB_HEAD_D   = $(MAIN_HEAD_D)/sub
-#SUB_OBJ_D    = $(MAIN_OBJ_D)/sub
-#SUB_SOURCES  = $(wildcard $(SUB_SRC_D)/*.$(SRC_EXT))
-#SUB_HEADERS  = $(wildcard $(SUB_HEAD_D)/*.$(HEAD_EXT))
-#SUB_OBJECTS  = $(patsubst $(SUB_SRC_D)/%.$(SRC_EXT), $(SUB_OBJ_D)/%.$(OBJ_EXT), $(SUB_SOURCES))
-#
-#$(SUB_OBJ_DIR)/%.$(OBJ_EXT): $(SUB_SRC_D)/%.$(SRC_EXT)
-#	$(CC) $(SUB_CC_FLAGS) -I'$(SUB_HEAD_D)' -c $< -o $@
-#
-#sub: $(SUB_OBJECTS) $(SUB_HEADERS)
-#	$(LD) $(SUB_OBJECTS) $(SUB_LD_FLAGS) -o $(SUB_BIN)
-
 # Memory module
 MEMORY_BIN		= libmem.a
 MEMORY_CC_FLAGS	= $(GLOBAL_CC_FLAGS)
@@ -143,14 +120,11 @@ $(SYSTEM_BIN): $(SYSTEM_C_OBJ) $(SYSTEM_S_OBJ) $(SYSTEM_INC)
 # Main recipe
 ###########################################################################################################
 
-# If main relies on any libraries, add them to the LD_FLAGS variable
-# Remember to add in-house libraries as dependencies to main recipe,
-# ie make them before try
+# Link library dependencies after the library that needs it, try not to make things circular
 # Do not include extension as theres an object copy neededing to link
 MAIN_BIN		= kernel8
 MAIN_CC_FLAGS	= $(GLOBAL_CC_FLAGS)
-#MAIN_LD_FLAGS	= $(GLOBAL_LD_FLAGS) -L'$(LIB_D)' -T linker.ld -lserial -lmmio -lmem -lsystem
-MAIN_LD_FLAGS	= -T linker.ld
+MAIN_LD_FLAGS	= $(GLOBAL_LD_FLAGS) -L'$(LIB_D)' -T linker.ld -lserial -lmmio -lsystem -lmem
 MAIN_AS_FLAGS	= $(GLOBAL_AS_FLAGS)
 MAIN_SRC_D    	= ../src
 MAIN_INC_D   	= ../include
@@ -159,9 +133,7 @@ MAIN_C_SRC		= $(wildcard $(MAIN_SRC_D)/*.c)
 MAIN_S_SRC		= $(wildcard $(MAIN_SRC_D)/*.S)
 MAIN_INC	  	= $(wildcard $(MAIN_INC_D)/*.h)
 MAIN_C_OBJ 		= $(patsubst $(MAIN_SRC_D)/%.c, $(MAIN_OBJ_D)/%_c.o, $(MAIN_C_SRC))
-MAIN_C_OBJ		+= $(MEMORY_C_OBJ) $(SERIAL_C_OBJ) $(MMIO_C_OBJ) $(SYSTEM_C_OBJ)
 MAIN_S_OBJ		= $(patsubst $(MAIN_SRC_D)/%.S, $(MAIN_OBJ_D)/%_S.o, $(MAIN_S_SRC))
-MAIN_S_OBJ		+= $(MEMORY_S_OBJ) $(SERIAL_S_OBJ) $(MMIO_S_OBJ) $(SYSTEM_S_OBJ)
 
 $(MAIN_OBJ_D)/%_S.o:	$(MAIN_SRC_D)/%.S
 	$(AS) $(MAIN_AS_FLAGS) -I'$(MAIN_INC_D)' -c $< -o $@
