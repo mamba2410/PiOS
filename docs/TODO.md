@@ -8,9 +8,6 @@
 - Virtual memory
 	- [btzsrc](https://github.com/bztsrc/raspi3-tutorial/tree/master/10_virtualmemory)
 	- s-matyukevitch, lesson 06
-- Interrupts
-	- Put interrupt polling in a loop, multiple interrupts could come at once
-	- Give unhandled interrupts better messages
 - Implement `sprintf`
 - Rewrite mailbox code to be better
 - Random numbers

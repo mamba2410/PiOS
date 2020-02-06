@@ -21,6 +21,7 @@
 
 #define REGISTER_FRAME_SIZE 0x100
 
+#define EMPTY_IRQ			0x0
 #define SYSTEM_TIMER_IRQ_0	(1 << 0)
 #define SYSTEM_TIMER_IRQ_1	(1 << 1)
 #define SYSTEM_TIMER_IRQ_2	(1 << 2)
@@ -37,6 +38,9 @@ extern void unmask_irq();
 void handle_irq_el1h();
 void show_invalid_entry_message(uint8_t exception_type, uint64_t esr, uint64_t *elr);
 void enable_interrupt_controller();
+
+extern char* const IRQ_NAMES[16];
+
 
 #endif /* __ASSEMBLER__ */
 
