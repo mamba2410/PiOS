@@ -13,6 +13,7 @@
 - Random numbers
 	- Pseudo-random
 	- Hardware backed?	
+- Change delay functinos to use interrupts and schedule things
 - `delay_millis()` `delay_micros()` functions
 	- Might want system clock freq as global constan/variable
 	- When `delay` is called, also schedule and switch tasks for a given time
