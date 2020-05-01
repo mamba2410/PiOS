@@ -13,7 +13,7 @@ void example_process(char *str){
 	while(1){
 		for(uint8_t i = 0; i < 5; i++){
 			uart_putc(str[i]);
-			mmio_delay(1e5);
+			mmio_delay(1e6);
 		}
 	}
 }
