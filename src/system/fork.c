@@ -29,3 +29,19 @@ uint8_t create_process(uint64_t func, uint64_t arg){
 	preempt_enable();	// Done making a new task, can switch now
 	return 0;
 }
+
+
+/*
+ * Move a task to user mode in EL0
+ */
+int8_t move_to_user(uint64_t pc){
+	pt_regs_t *r = task_pt_regs(current);
+}
+
+/*
+ * Get registers from task
+ */
+pt_regs_t* task_pt_regs(task_t *task){
+	uint64_t r = (uint64_t)task + PAGE_SIZE - sizeof(pt_regs_t);
+	return (pt_regs_t*)r;
+}

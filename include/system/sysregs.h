@@ -49,5 +49,10 @@
 #define SPSR_EL3_VALUE				(SPSR_MASK_ALL | SPSR_EL2h)
 #define SPSR_EL2_VALUE				(SPSR_MASK_ALL | SPSR_EL1h)
 
+/*
+ * ESR_EL1, Exception Syndrome Register (EL1)
+ */
+#define ESR_ELx_EC_SHIFT			26
+#define ESR_ELx_EC_SVC64			0x15
 
 #endif // ARM_SYSTEM_REGISTERS_H

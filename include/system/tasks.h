@@ -51,10 +51,12 @@ typedef struct {
  */
 typedef struct {
 	cpu_context_t cpu_context;
-	int64_t state;
-	int64_t lifetime;
-	int64_t can_preempt;
-	int64_t priority;
+	int64_t  state;
+	int64_t  lifetime;
+	int64_t  can_preempt;
+	int64_t  priority;
+	uint64_t stack;
+	uint64_t flags;
 } task_t;
 
 // Init task definition
@@ -66,6 +68,7 @@ typedef struct {
 #define TASK_STATE_HALTED				0
 #define TASK_STATE_RUNNING				1
 #define TASK_STATE_WAITING_INTERRUPT	2
+#define TASK_STATE_ZOMBIE				3
 
 #define MAX_TASKS 64	// Maximum number of tasks can handle
 

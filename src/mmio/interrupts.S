@@ -1,12 +1,13 @@
 #include <mmio/interrupts.h>
+#include <system/sysregs.h>
 
 	.macro vector_table_entry	vector_label	// Define a macro to handle adding vector entries
 	.align	7									// Vectors need to be offset 0x80 from each other
 	b		\vector_label						// Immediately branch to new location since we only have 0x80 bytes of code to play with here
 	.endm										// End the macro
 
-	.macro handle_invalid_entry	type			// Macro to handle interrupts we don't care about. Using macros to leave registers untouched
-	save_registers								// Macro to save the processor state
+	.macro handle_invalid_entry	exception_level,type			// Macro to handle interrupts we don't care about. Using macros to leave registers untouched
+	save_registers \exception_level				// Macro to save the processor state
 	mov		x0, #\type							// Prepare arguments for the function call
 	mrs		x1, esr_el1							//
 	mrs		x2, elr_el1							//
@@ -14,7 +15,7 @@
 	b		error_hang							// Hang the processor
 	.endm										// End the macro
 
-	.macro save_registers						// Save the registers before handling an interrupt
+	.macro save_registers	exception_level		// Save the registers before handling an interrupt
 	sub		sp, sp, #REGISTER_FRAME_SIZE		// Move the stack pointer to below the register frame
 	stp		x0,  x1,  [sp, #0x10 * 0]			// Store pair(?) of registers to above the stack
 	stp		x2,  x3,  [sp, #0x10 * 1]
@@ -30,18 +31,29 @@
 	stp		x22, x23, [sp, #0x10 * 11]
 	stp		x24, x25, [sp, #0x10 * 12]
 	stp		x26, x27, [sp, #0x10 * 13]
-	stp		x28, x29, [sp, #0x10 * 14]
-	str		x30, 	  [sp, #0x10 * 16]			// Do this for all general putpose registers. Add more as needed
+	stp		x28, x29, [sp, #0x10 * 14]			// Do this for all general purpose registers
 
-	mrs		x22, elr_el1
-	mrs		x23, spsr_el1
-	stp		x22, x23, [sp, #0x10 * 15]	// Store exception registers as well, half offset because I want to keep registers in order
+	.if		\exception_level==0					// Are we EL0?
+	mrs		x21, sp_el0							// If so, store the EL0 stack pointer
+	.else										// If we aren't EL0
+	add		x21, sp, #REGISTER_FRAME_SIZE		// Store the current stack pointer
+	.endif /* \exception_level=0 */				// 
+	stp		x30, x21, [sp, #0x10 * 15]			// Store x30, x21 on stack
+
+	mrs		x22, elr_el1						// Get exceptino link register
+	mrs		x23, spsr_el1						// Get program status register
+	stp		x22, x23, [sp, #0x10 * 16]			// Save to stack
 	.endm
 
-	.macro populate_registers					// Repopulate registers after handling an interrupt
-	ldp		x22, x23, [sp, #0x10 * 15]
-	msr		elr_el1, x22
-	msr		spsr_el1, x23						// Restore exception registers
+	.macro populate_registers	exception_level	// Repopulate registers after handling an interrupt
+	ldp		x30, x21, [sp, #0x10 * 15]			// Load x30 and sp
+	.if \exception_level==0						// Are we EL0?
+	msr		sp_el0, x21							// If we are, save the stack pointer
+	.endif /* \exception_level==0 */			
+
+	ldp		x22, x23, [sp, #0x10 * 16]			// Load into registers
+	msr		elr_el1, x22						// Restore exception link register
+	msr		spsr_el1, x23						// Restore program status register
 
 	ldp		x0,  x1,  [sp, #0x10 * 0]			// Load pair(?) of registers to above the stack
 	ldp		x2,  x3,  [sp, #0x10 * 1]
@@ -58,7 +70,6 @@
 	ldp		x24, x25, [sp, #0x10 * 12]
 	ldp		x26, x27, [sp, #0x10 * 13]
 	ldp		x28, x29, [sp, #0x10 * 14]
-	ldr		x30, 	  [sp, #0x10 * 16]			// Do this for all general putpose registers. Add more as needed
 	add		sp, sp, #REGISTER_FRAME_SIZE		// Move the stack pointer back up
 	eret
 	.endm
@@ -83,8 +94,8 @@ vector_table:
 	vector_table_entry	fiq_invalid_el0_32		// Fast interrupt at el0 32-bit, invalid
 	vector_table_entry	err_invalid_el0_32		// Error interrupt at el0 32-bit, invalid (for now)
 
-	vector_table_entry	snc_invalid_el0_64		// Synchronous interrupt at el0 64-bit, invalid (for now)
-	vector_table_entry	irq_invalid_el0_64		// Normal interrupt at el0 64-bit, invalid (for now)
+	vector_table_entry	snc_valid_el0_64		// Synchronous interrupt at el0 64-bit, valid
+	vector_table_entry	irq_valid_el0_64		// Normal interrupt at el0 64-bit, valid
 	vector_table_entry	fiq_invalid_el0_64		// Fast interrupt at el0 64-bit, invalid
 	vector_table_entry	err_invalid_el0_64		// Error interrupt at el0 64-bit, invalid (for now)
 
@@ -110,65 +121,75 @@ interrupt_vector_table_init:	// Initialise the vector table
 // Valid (handled) exceptions
 
 irq_valid_el1h:				// Normal interrupt at EL1h
-	save_registers			// Save the current registers to the stack
+	save_registers 1		// Save the current registers to the stack at EL1
 	bl		handle_irq_el1h	// Branch with link to a C function
-	populate_registers		// Repopulate the registers
+	populate_registers 1	// Repopulate the registers at EL1
 	eret					// Exception return
+
+irq_valid_el0_64:			// Normal interrupt at EL0 64-bit
+	save_registers 0		// Save the current registers to the stack at EL0
+	bl		handle_irq_el0_64	// Branch with link to a C function
+	populate_registers 0	// Repopulate the registers at EL0
+	eret					// Exception return
+
+
+snc_valid_el0_64:			// Synchronous interrupt at EL0 64-bit
+	save_registers 0		// Save registers at EL0
+	mrs		x25, esr_el1	// Read exception syndrome register
+	lsr		x24, x25, #ESR_ELx_EC_SHIFT			// Load the exceptino class into x24
+	cmp		x24, #ESR_ELx_EC_SVC64				// Are we handling an SVC 64-bit interrupt?
+	b.eq	el0_64_svc							// If we are, branch to hande that
+	handle_invalid_entry 0, SNC_ERROR_EL0_64	// If not, throw an error
+
 
 
 // Invalid (unhandled) exceptions
 
 // EL1t
 snc_invalid_el1t:
-	handle_invalid_entry	SNC_INVALID_EL1T
+	handle_invalid_entry	1, SNC_INVALID_EL1T
 
 irq_invalid_el1t:
-	handle_invalid_entry	IRQ_INVALID_EL1T
+	handle_invalid_entry	1, IRQ_INVALID_EL1T
 
 fiq_invalid_el1t:
-	handle_invalid_entry	FIQ_INVALID_EL1T
+	handle_invalid_entry	1, FIQ_INVALID_EL1T
 
 err_invalid_el1t:
-	handle_invalid_entry	ERR_INVALID_EL1T
+	handle_invalid_entry	1, ERR_INVALID_EL1T
 
 
 // EL1h (what pios currently runs at)
 snc_invalid_el1h:
-	handle_invalid_entry	SNC_INVALID_EL1H
+	handle_invalid_entry	1, SNC_INVALID_EL1H
 
 fiq_invalid_el1h:
-	handle_invalid_entry	FIQ_INVALID_EL1H
+	handle_invalid_entry	1, FIQ_INVALID_EL1H
 
 err_invalid_el1h:
-	handle_invalid_entry	ERR_INVALID_EL1H
+	handle_invalid_entry	1, ERR_INVALID_EL1H
 
 
 // EL0 32-bit mode
 snc_invalid_el0_32:
-	handle_invalid_entry	SNC_INVALID_EL0_32
+	handle_invalid_entry	0, SNC_INVALID_EL0_32
 
 irq_invalid_el0_32:
-	handle_invalid_entry	IRQ_INVALID_EL0_32
+	handle_invalid_entry	0, IRQ_INVALID_EL0_32
 
 fiq_invalid_el0_32:
-	handle_invalid_entry	FIQ_INVALID_EL0_32
+	handle_invalid_entry	0, FIQ_INVALID_EL0_32
 
 err_invalid_el0_32:
-	handle_invalid_entry	ERR_INVALID_EL0_32
+	handle_invalid_entry	0, ERR_INVALID_EL0_32
 
 
 // EL0 64-bit mode
-snc_invalid_el0_64:
-	handle_invalid_entry	SNC_INVALID_EL0_64
-
-irq_invalid_el0_64:
-	handle_invalid_entry	IRQ_INVALID_EL0_64
-
 fiq_invalid_el0_64:
-	handle_invalid_entry	FIQ_INVALID_EL0_64
+	handle_invalid_entry	0, FIQ_INVALID_EL0_64
 
 err_invalid_el0_64:
-	handle_invalid_entry	ERR_INVALID_EL0_64
+	handle_invalid_entry	0, ERR_INVALID_EL0_64
 
 
 // Hang the processor

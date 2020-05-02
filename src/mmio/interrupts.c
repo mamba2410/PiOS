@@ -5,7 +5,7 @@
 #include <serial/printf.h>
 #include <system/timer.h>
 
-char* const IRQ_NAMES[16] = {
+char* const IRQ_NAMES[] = {
 	"Synchronous Exception EL1t",
 	"Interrupt Request EL1t", 
 	"Fast Interrupt Request EL1t",
@@ -21,7 +21,9 @@ char* const IRQ_NAMES[16] = {
 	"Synchronous Exception EL0_64",
 	"Interrupt Request EL0_64", 
 	"Fast Interrupt Request EL0_64",
-	"System Error EL0_64"
+	"System Error EL0_64",
+	"Synchronous Exception EL0_64 ERROR",
+	"System Call EL0_64 ERROR"
 };
 
 /*
