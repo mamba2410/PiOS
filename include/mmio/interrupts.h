@@ -22,7 +22,8 @@
 #define SNC_ERROR_EL0_64	0x10
 #define	SYSCALL_ERROR_EL0_64 0x11
 
-#define REGISTER_FRAME_SIZE 0x100
+#define REGISTER_FRAME_SIZE 0x110
+#define X0_REGISTER_OFFSET	0x0
 
 #define EMPTY_IRQ			0x0
 #define SYSTEM_TIMER_IRQ_0	(1 << 0)
@@ -42,7 +43,7 @@ void handle_irq_el1h();
 void show_invalid_entry_message(uint8_t exception_type, uint64_t esr, uint64_t *elr);
 void enable_interrupt_controller();
 
-extern char* const IRQ_NAMES[16];
+extern char* const IRQ_NAMES[];
 
 
 #endif /* __ASSEMBLER__ */

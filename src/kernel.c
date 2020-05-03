@@ -59,10 +59,11 @@ void kernel_main(void){
 
 	printf("Interrupts initialised, forking processes\n");
 
-	result = create_process( (uint64_t)(&example_process), (uint64_t)"abcde" );
-	if(result){ printf("Error whilst starting process 1\n"); return; }
-	result = create_process( (uint64_t)(&example_process), (uint64_t)"12345" );
-	if(result){ printf("Error whilst starting process 2\n"); return; }
+	result = create_process(PF_KERNEL_THREAD, (uint64_t)(&example_process), (uint64_t)"abcde", 0);
+	//if(result){ printf("Error whilst starting process 1\n"); return; }
+
+	result = create_process(PF_KERNEL_THREAD, (uint64_t)(&example_process), (uint64_t)"12345", 0);
+	//if(result){ printf("Error whilst starting process 2\n"); return; }
 	
 
 	printf("Processes forked, starting schedule loop\n");

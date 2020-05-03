@@ -61,7 +61,13 @@ typedef struct {
 
 // Init task definition
 #define INIT_CPU_CONTEXT_STRUCT {.x19=0, .x20=0, .x21=0, .x22=0, .x23=0, .x24=0, .x25=0, .x26=0, .x27=0, .x28=0, .fp=0, .pc=0, .sp=0}
-#define INIT_TASK_STRUCT {.cpu_context=INIT_CPU_CONTEXT_STRUCT, .state=TASK_STATE_RUNNING, .lifetime=0, .can_preempt=1, .priority=1}
+#define INIT_TASK_STRUCT {	.cpu_context	= INIT_CPU_CONTEXT_STRUCT,\
+							.state			= TASK_STATE_RUNNING,\
+							.lifetime		= 0,\
+							.can_preempt	= 1,\
+							.priority		= 1,\
+							.stack			= 0,\
+							.flags			= PF_KERNEL_THREAD}
 
 
 // Task states
@@ -69,6 +75,11 @@ typedef struct {
 #define TASK_STATE_RUNNING				1
 #define TASK_STATE_WAITING_INTERRUPT	2
 #define TASK_STATE_ZOMBIE				3
+
+/*
+ * Clone flag constants
+ */
+#define PF_KERNEL_THREAD				0x00000002
 
 #define MAX_TASKS 64	// Maximum number of tasks can handle
 
@@ -82,6 +93,7 @@ void preempt_disable();
 void schedule();
 void schedule_tick();
 void switch_task(task_t*);
+void exit_process();
 extern void cpu_switch_task(task_t*, task_t*);
 
 #endif /* __ASSEMBLER */

@@ -7,12 +7,18 @@
 #define	SYSCALL_EXIT	0x4
 #define SYSCALL_TOTAL	4
 
-#ifndef __ASSEMBER__
+#ifndef __ASSEMBLER__
+#include <stdint.h>
 
 void	 sys_write(char*);
 uint8_t	 sys_clone(uint64_t);
 uint64_t sys_malloc();
 void	 sys_exit();
+
+extern void	 	call_sys_write(char*);
+extern uint8_t	call_sys_clone(uint64_t func, uint64_t arg, uint64_t sp);
+extern uint64_t call_sys_malloc();
+extern void	 	call_sys_exit();
 
 
 #endif /* __ASSEMBLER__ */

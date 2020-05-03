@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <memory/mem.h>
 #include <mmio/interrupts.h>
 #include <system/tasks.h>
 
@@ -88,3 +89,22 @@ void switch_task(task_t *task){
 	cpu_switch_task(prev, task);	// Do the switch
 }
 
+
+/*
+ * Function to exit and destroy a task after compeltion
+ */
+void exit_process(){
+	preempt_disable();							// Don't interrupt killing a task
+
+	for(uint32_t i = 0; i < MAX_TASKS; i++){	// Loop through all tasks
+		if( tasks[i] == current_task ){			// If we are current task
+			tasks[i]->state = TASK_STATE_ZOMBIE;		// Set task state to zombie
+			break;								// Exit for loop
+		}
+	}
+	if( current_task->stack )					// If we have a stack
+		free_page(current_task->stack);			// Free it
+	
+	preempt_enable();							// Can interrupt me now
+	schedule();									// Find another task to run
+}

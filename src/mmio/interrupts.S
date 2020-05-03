@@ -1,4 +1,5 @@
 #include <mmio/interrupts.h>
+#include <system/syscalls.h>
 #include <system/sysregs.h>
 
 	.macro vector_table_entry	vector_label	// Define a macro to handle adding vector entries
@@ -15,7 +16,8 @@
 	b		error_hang							// Hang the processor
 	.endm										// End the macro
 
-	.macro save_registers	exception_level		// Save the registers before handling an interrupt
+
+	.macro save_registers, exception_level		// Save the registers before handling an interrupt
 	sub		sp, sp, #REGISTER_FRAME_SIZE		// Move the stack pointer to below the register frame
 	stp		x0,  x1,  [sp, #0x10 * 0]			// Store pair(?) of registers to above the stack
 	stp		x2,  x3,  [sp, #0x10 * 1]
@@ -40,12 +42,13 @@
 	.endif /* \exception_level=0 */				// 
 	stp		x30, x21, [sp, #0x10 * 15]			// Store x30, x21 on stack
 
-	mrs		x22, elr_el1						// Get exceptino link register
+	mrs		x22, elr_el1						// Get exception link register
 	mrs		x23, spsr_el1						// Get program status register
 	stp		x22, x23, [sp, #0x10 * 16]			// Save to stack
 	.endm
+	
 
-	.macro populate_registers	exception_level	// Repopulate registers after handling an interrupt
+	.macro populate_registers, exception_level	// Repopulate registers after handling an interrupt
 	ldp		x30, x21, [sp, #0x10 * 15]			// Load x30 and sp
 	.if \exception_level==0						// Are we EL0?
 	msr		sp_el0, x21							// If we are, save the stack pointer
@@ -128,7 +131,8 @@ irq_valid_el1h:				// Normal interrupt at EL1h
 
 irq_valid_el0_64:			// Normal interrupt at EL0 64-bit
 	save_registers 0		// Save the current registers to the stack at EL0
-	bl		handle_irq_el0_64	// Branch with link to a C function
+	bl		handle_irq_el1h	// Branch with link to a C function
+							// Note: Branches to EL1h function since it does exactly the same thing
 	populate_registers 0	// Repopulate the registers at EL0
 	eret					// Exception return
 
@@ -141,6 +145,41 @@ snc_valid_el0_64:			// Synchronous interrupt at EL0 64-bit
 	b.eq	el0_64_svc							// If we are, branch to hande that
 	handle_invalid_entry 0, SNC_ERROR_EL0_64	// If not, throw an error
 
+
+// Branches used by valid exceptions
+
+el0_64_svc:
+	adr		x27, syscall_table		// Load syscall table pointer
+	uxtw	x26, w8					// Put syscall number in x8
+	mov		x25, #SYSCALL_TOTAL		// Put number of syscalls in x25
+	bl		unmask_irq				// Enable IRQs
+	cmp		x26, x25				// Are we a valid syscall?
+	b.hs	invalid_syscall			// If not, go to invalid syscall
+
+	ldr		x16, [x27, x26, lsl #3]	// Get address of sys_* function
+	blr		x16						// Cal the sys_* function
+	b ret_from_syscall
+
+invalid_syscall:
+	handle_invalid_entry 0, SYSCALL_ERROR_EL0_64	// Handle invalid exception
+
+ret_from_syscall:							// When returning from a syscall
+	bl		mask_irq						// Disable IRQs
+	str		x0, [sp, X0_REGISTER_OFFSET]	// Store return value into saved registers
+	populate_registers 0					// Populate those registers
+	eret									// Exception return back to user mode
+
+// Note: This is here because it needs the populate_registers macro
+.global ret_from_fork
+ret_from_fork:
+	bl		preempt_enable	// Enable preemption
+	cbz		x19, ret_to_user// If x19 s zero, we must be in user mode
+	mov		x0, x20			// Put the function argument into x0
+	blr		x19				// Branch to function pointed to by x19
+ret_to_user:
+	bl		mask_irq		// Disable IRQs
+	populate_registers 0	// Restore registers
+	eret					// Exception return
 
 
 // Invalid (unhandled) exceptions
