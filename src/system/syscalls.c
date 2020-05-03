@@ -5,7 +5,6 @@
 #include <system/timer.h>
 #include <system/syscalls.h>
 
-void* const syscall_table[] = {sys_write, sys_clone, sys_malloc, sys_exit};
 
 /*
  * Syscall to write to the console
@@ -41,3 +40,5 @@ uint64_t sys_malloc(){
 void sys_exit(){
 	exit_process();
 }
+
+void* const syscall_table[] = {sys_write, sys_clone, sys_malloc, sys_exit};

@@ -27,6 +27,7 @@ void schedule_tick(){
 	if( (current_task->lifetime > 0) || !(current_task->can_preempt) )	// If it still has life or cannot be switched
 		return;		// Do nothing
 
+
 	unmask_irq();	// Else, enable interrupts (we are inside an interrupt already)
 	schedule();		// schedule the tasks
 	mask_irq();		// disable interrupts again

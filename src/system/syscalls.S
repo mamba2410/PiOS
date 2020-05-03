@@ -21,7 +21,7 @@ call_sys_clone:
 
 	mov		x0, x2				// Put stack in x0
 	mov		x8, #SYSCALL_CLONE	// Put clone syscall ID in x8
-	svc		#0					// Generate synchronous exception
+	svc		0					// Generate synchronous exception
 	
 	cmp		x0, #0				// Is the return value zero
 	beq		thread_start		// If yes, we are child and we start our thread
@@ -33,7 +33,7 @@ thread_start:
 	blr		x10					// Branch to function
 
 	mov		x8, #SYSCALL_EXIT	// Load x8 with exit ID
-	svc		#0					// Generate synchronous exception
+	svc		0					// Generate synchronous exception
 
 
 /*
@@ -41,7 +41,7 @@ thread_start:
  */
 .global call_sys_malloc
 call_sys_malloc:
-	mov		x8,	#SYSCALL_MALLOC	// Load register with malloc syscall ID
+	mov		w8,	#SYSCALL_MALLOC	// Load register with malloc syscall ID
 	svc		#0					// Generate synchronous exception
 	ret							// Return to sender
 
@@ -51,6 +51,6 @@ call_sys_malloc:
  */
  .global call_sys_exit
  call_sys_exit:
- 	mov		x8,	#SYSCALL_EXIT	// Load register with exit syscall ID
+ 	mov		w8,	#SYSCALL_EXIT	// Load register with exit syscall ID
 	svc		#0					// Generate synchronous exception
 	ret							// Return to sender

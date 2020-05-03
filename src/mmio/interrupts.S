@@ -7,11 +7,12 @@
 	b		\vector_label						// Immediately branch to new location since we only have 0x80 bytes of code to play with here
 	.endm										// End the macro
 
-	.macro handle_invalid_entry	exception_level,type			// Macro to handle interrupts we don't care about. Using macros to leave registers untouched
+	.macro handle_invalid_entry	exception_level,type	// Macro to handle interrupts we don't care about. Using macros to leave registers untouched
 	save_registers \exception_level				// Macro to save the processor state
 	mov		x0, #\type							// Prepare arguments for the function call
 	mrs		x1, esr_el1							//
-	mrs		x2, elr_el1							//
+	//mrs		x2, elr_el1							//
+	mov		x2, sp
 	bl		show_invalid_entry_message			// Call the function to display the error
 	b		error_hang							// Hang the processor
 	.endm										// End the macro
@@ -92,15 +93,15 @@ vector_table:
 	vector_table_entry	fiq_invalid_el1h		// Fast interrupt at el1h, invalid
 	vector_table_entry	err_invalid_el1h		// Error interrupt at el1h, invalid (for now)
 
-	vector_table_entry	snc_invalid_el0_32		// Synchronous interrupt at el0 32-bit, invalid (for now)
-	vector_table_entry	irq_invalid_el0_32		// Normal interrupt at el0 32-bit, invalid (for now)
-	vector_table_entry	fiq_invalid_el0_32		// Fast interrupt at el0 32-bit, invalid
-	vector_table_entry	err_invalid_el0_32		// Error interrupt at el0 32-bit, invalid (for now)
-
 	vector_table_entry	snc_valid_el0_64		// Synchronous interrupt at el0 64-bit, valid
 	vector_table_entry	irq_valid_el0_64		// Normal interrupt at el0 64-bit, valid
 	vector_table_entry	fiq_invalid_el0_64		// Fast interrupt at el0 64-bit, invalid
 	vector_table_entry	err_invalid_el0_64		// Error interrupt at el0 64-bit, invalid (for now)
+
+	vector_table_entry	snc_invalid_el0_32		// Synchronous interrupt at el0 32-bit, invalid (for now)
+	vector_table_entry	irq_invalid_el0_32		// Normal interrupt at el0 32-bit, invalid (for now)
+	vector_table_entry	fiq_invalid_el0_32		// Fast interrupt at el0 32-bit, invalid
+	vector_table_entry	err_invalid_el0_32		// Error interrupt at el0 32-bit, invalid (for now)
 
 
 .global mask_irq
@@ -142,7 +143,7 @@ snc_valid_el0_64:			// Synchronous interrupt at EL0 64-bit
 	mrs		x25, esr_el1	// Read exception syndrome register
 	lsr		x24, x25, #ESR_ELx_EC_SHIFT			// Load the exceptino class into x24
 	cmp		x24, #ESR_ELx_EC_SVC64				// Are we handling an SVC 64-bit interrupt?
-	b.eq	el0_64_svc							// If we are, branch to hande that
+	b.eq	el0_64_svc							// If we are, branch to handle that
 	handle_invalid_entry 0, SNC_ERROR_EL0_64	// If not, throw an error
 
 

@@ -47,8 +47,8 @@ void handle_irq_el1h(){
 /*
  * Prints information about the unhandled interrupt
  */
-void show_invalid_entry_message(uint8_t exception_type, uint64_t esr, uint64_t *elr){
-	printf("Exception type: %s (0x%x); esr: %x; elr: %x\n", IRQ_NAMES[exception_type], exception_type, esr, elr);
+void show_invalid_entry_message(uint8_t exception_type, uint64_t esr, uint64_t elr){
+	printf("Exception type: %s (0x%x); esr: 0x%0x; elr: 0x%0x\n", IRQ_NAMES[exception_type], exception_type, esr, elr);
 }
 
 

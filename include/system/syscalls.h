@@ -1,11 +1,11 @@
 #ifndef SYSCALLS_H
 #define SYSCALLS_H
 
-#define SYSCALL_WRITE	0x1
-#define	SYSCALL_CLONE	0x2
-#define	SYSCALL_MALLOC	0x3
-#define	SYSCALL_EXIT	0x4
-#define SYSCALL_TOTAL	4
+#define SYSCALL_WRITE	0x0
+#define	SYSCALL_CLONE	0x1
+#define	SYSCALL_MALLOC	0x2
+#define	SYSCALL_EXIT	0x3
+#define SYSCALL_TOTAL	0x4
 
 #ifndef __ASSEMBLER__
 #include <stdint.h>
