@@ -1,14 +1,16 @@
 # TODO
 
 ## Bugfixes
+- Rework `screen` section of README
+- Currently seems to die if `get_exception_level()` is called from inside a user process.
 
 ## Features
+- Move all testing code to new files
 - User processes
 	- `fork` `kfork` `clone` `kclone` etc
 - Virtual memory
 	- [btzsrc](https://github.com/bztsrc/raspi3-tutorial/tree/master/10_virtualmemory)
 	- s-matyukevitch, lesson 06
-- Implement `sprintf`
 - Rewrite mailbox code to be better
 - Random numbers
 	- Pseudo-random
