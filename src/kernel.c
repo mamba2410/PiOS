@@ -18,6 +18,18 @@ void example_process(char *str){
 	}
 }
 
+void kernel_process(){
+	printf("Kernel process started. EL%d\n", get_exception_level());
+	int32_t error = move_to_user((uint64_t)(&user_process));
+	if(error < 0) printf("Error whilst moving kernel process to user mode.\n");
+}
+
+void user_process(){
+	char buf[32] = {0};
+	sprintf(buf, "User process started at EL%d\n", get_exception_level());
+	call_sys_write(buf);
+}
+
 // Main function passed to by boot.S
 void kernel_main(void){
 	int8_t result;
@@ -25,6 +37,7 @@ void kernel_main(void){
 	uart_init();		// Initialise uart
 	printf("Initialised uart!\n");
 	printf("IBRD:%u\tFBRD:%u\n", IBRD_VALUE, FBRD_VALUE);
+	printf("Exceptino level EL%d\n", get_exception_level());
 
 	// Get the serial number of the board with mailboxes
 	mailbox[0] = 8 *sizeof(mailbox[0]);			// Size of mailbox message in bytes ( 8 times uint32_t)
