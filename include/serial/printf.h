@@ -13,8 +13,11 @@
 /*
  * C stuff
  */
+void	_format		(char *format, va_list va, void(*putc)(char));
 void	uart_format (char *format, va_list va);
 void	uart_printf (char *format, ...);
+void	sprintf		(char *str, char *format, ...);
+//void	sprintf_putc(char c);
 
 // Quick macro to allow printf() instead of uart_printf()
 #define printf  uart_printf

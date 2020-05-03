@@ -2,6 +2,9 @@
 #include <stdarg.h>
 #include <serial/printf.h>
 
+static char *putc_str = (char*)0;
+static uint16_t putc_str_end = 0;
+
 /*
  * Convert unsigned long int to string
  */
@@ -75,12 +78,12 @@ static char str_to_int32(char c, char **str_pointer, uint8_t base, uint32_t *num
 /*
  * Prints a string n characters long
  */
-static void put_n_characters(uint8_t n, char fill, char *buffer){
+static void put_n_characters(uint8_t n, char fill, char *buffer, void(*putc)(char)){
 	char *p = buffer;
 	char c;
 	while( *p++ && n > 0 ) n--;				// Get the number of fill characters to use
-	while( n-- > 0 ) uart_putc(fill);		// Print the required fill characters
-	while( (c = *buffer++) ) uart_putc(c);	// Print the rest of the string
+	while( n-- > 0 ) (*putc)(fill);			// Print the required fill characters
+	while( (c = *buffer++) ) (*putc)(c);	// Print the rest of the string
 }
 
 
@@ -88,7 +91,7 @@ static void put_n_characters(uint8_t n, char fill, char *buffer){
  * Format the string with the arguments
  * prints string to uart
  */
-void uart_format(char *format, va_list va){
+void _format(char *format, va_list va, void(*putc)(char)){
 	char buffer[12];	// have a buffer string
 	char c;
 
@@ -96,9 +99,9 @@ void uart_format(char *format, va_list va){
 	while( (c = *format++) ){
 		if( c != '%'){
 #ifdef NEWLINE_CARRIAGE_RETURN
-			if(c == '\n') uart_putc('\r');	// If the character is newline, also print carriage return
+			if(c == '\n') (*putc)('\r');	// If the character is newline, also print carriage return
 #endif /* NEWLINE_CARRIAGE_RETURN */
-			uart_putc(c);					// If the character isn't special, print it
+			(*putc)(c);					// If the character isn't special, print it
 		} else{
 			char fill = ' ';
 			uint32_t number_length = 0;
@@ -115,30 +118,30 @@ void uart_format(char *format, va_list va){
 				case  0 : goto abort;	//if null, quit
 				case 'u': {				// printing unsigned int
 					uint64_to_str(va_arg(va, uint64_t), 10, 0, buffer);	// convert first argument to unsigned int string and put it in buffer
-					put_n_characters(number_length, fill, buffer);		// print the buffer
+					put_n_characters(number_length, fill, buffer, putc);		// print the buffer
 					break;
 				 }
 				case 'd': {				// printing signed decimal
 					int64_to_str(va_arg(va, int64_t), buffer);			// Convert to signed int string and put in buffer
-					put_n_characters(number_length, fill, buffer);		// print buffer
+					put_n_characters(number_length, fill, buffer, putc);		// print buffer
 					break;
 				}
 				case 'x':				// printing lower case hex
 				case 'X': {				// printing upper case hex
 					uint64_to_str(va_arg(va, uint64_t), 16, (c=='X'), buffer);	// Convert to upper/lower case hex string
-					put_n_characters(number_length, fill, buffer);
+					put_n_characters(number_length, fill, buffer, putc);
 					break;
 				}
 				case 'c': {				// printing a character
-					uart_putc((char)va_arg(va, uint32_t));		// Print the character in the arguments
+					(*putc)((char)va_arg(va, uint32_t));		// Print the character in the arguments
 					break;
 				}
 				case 's': {				// printing a string
-					put_n_characters(number_length, fill, va_arg(va, char*));	// print the string given
+					put_n_characters(number_length, fill, va_arg(va, char*), putc);	// print the string given
 					break;
 				}
 				case '%': {				// printing a literal '%'
-					uart_putc(c);		// Just put the %
+					(*putc)(c);		// Just put the %
 				}
 				default: break;
 			}
@@ -146,6 +149,20 @@ void uart_format(char *format, va_list va){
 	}
 
 	abort:;	// Label for aborting the function
+}
+
+/*
+ * ===================================
+ *
+ */
+
+
+void uart_format(char *format, va_list va){
+	_format(format, va, &uart_putc);
+}
+
+static void sprintf_putc(char c){
+	putc_str[putc_str_end++] = c;
 }
 
 
@@ -156,6 +173,16 @@ void uart_printf(char *format, ...){
 	va_list va;
 	va_start(va, format);
 	uart_format(format, va);
+	va_end(va);
+}
+
+void sprintf(char *str, char *format, ...){
+	va_list va;
+	va_start(va, format);
+	putc_str = str;
+	putc_str_end = 0;
+	_format(format, va, &sprintf_putc);
+	sprintf_putc('\0');
 	va_end(va);
 }
 
