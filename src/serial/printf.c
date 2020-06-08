@@ -156,23 +156,24 @@ void _format(char *format, va_list va, void(*putc)(char)){
  *
  */
 
-
-void uart_format(char *format, va_list va){
-	_format(format, va, &uart_putc);
-}
-
 static void sprintf_putc(char c){
 	putc_str[putc_str_end++] = c;
 }
 
 
 /*
- * printf for the mini uart
+ * printf for the uart
  */
-void uart_printf(char *format, ...){
+void printf(char *format, ...){
 	va_list va;
 	va_start(va, format);
-	uart_format(format, va);
+#ifdef PRINTF_UART0
+#include <serial/uart0.h>
+	_format(format, va, &uart0_putc);
+#else
+#include <serial/mini_uart.h>
+	_format(format, va, &mini_uart_putc);
+#endif /* PRINTF_UART0 */
 	va_end(va);
 }
 
