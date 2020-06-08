@@ -14,7 +14,6 @@
 
 
 ## Tests
-- Move all testing code to new files, `test.c` `test.h` and section the code.
 - Print memory map when tasks switch etc. Make sure sp etc are in the right place.
 
 
