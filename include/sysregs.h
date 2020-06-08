@@ -24,6 +24,15 @@
 #define SCTLR_VALUE_MMU_DISABLED	(SCTLR_RESERVED | SCTLR_EE_LITTLE_ENDIAN | SCTLR_I_CACHE_DISABLED | SCTLR_D_CACHE_DISABLED | SCTLR_MMU_DISABLED)
 
 /*
+ * CPACR_EL1
+ */
+#define CPACR_TRAP_ALL				(0<<20)
+#define CPACR_TRAP_EL0				(1<<20)
+#define CPACR_TRAP_EL01				(1<<21)
+#define CPACR_TRAP_NONE				(3<<20)
+#define CPACR_VALUE					(CPACR_TRAP_NONE)
+
+/*
  * HCR_EL2, Hypervisor Configuration Register (EL2), page 2487
  */
 #define HCR_RW	    				(1 << 31)
