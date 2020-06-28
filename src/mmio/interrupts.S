@@ -11,8 +11,8 @@
 	save_registers \exception_level				// Macro to save the processor state
 	mov		x0, #\type							// Prepare arguments for the function call
 	mrs		x1, esr_el1							//
-	//mrs		x2, elr_el1							//
-	mov		x2, sp
+	mrs		x2, elr_el1							//
+	//mov		x2, sp							// debug show current sp
 	bl		show_invalid_entry_message			// Call the function to display the error
 	b		error_hang							// Hang the processor
 	.endm										// End the macro
@@ -142,10 +142,21 @@ snc_valid_el0_64:			// Synchronous interrupt at EL0 64-bit
 	save_registers 0		// Save registers at EL0
 	mrs		x25, esr_el1	// Read exception syndrome register
 	lsr		x24, x25, #ESR_ELx_EC_SHIFT			// Load the exceptino class into x24
+
 	cmp		x24, #ESR_ELx_EC_SVC64				// Are we handling an SVC 64-bit interrupt?
 	b.eq	el0_64_svc							// If we are, branch to handle that
-	handle_invalid_entry 0, SNC_ERROR_EL0_64	// If not, throw an error
 
+	cmp		x24, #ESR_ELx_EC_UNKNOWN			// Are we handling an unknown/misc exception?
+	b.eq	snc_valid_el0_64_unknown			// ...if we are, branch to asm function to handle
+
+	handle_invalid_entry 0, SNC_ERROR_EL0_64	// If nothing matched, throw an error
+
+snc_valid_el0_64_unknown:
+	mrs		x0, esr_el1							// arg1 = esr
+	mrs		x1, elr_el1							// arg2 = elr
+	bl		handle_el0_64_unknown				// Branch to c function
+	handle_invalid_entry 0, SNC_ERROR_EL0_64	// If nothing matched, throw an error
+	
 
 // Branches used by valid exceptions
 

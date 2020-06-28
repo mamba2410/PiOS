@@ -50,9 +50,15 @@
 #define SPSR_EL2_VALUE				(SPSR_MASK_ALL | SPSR_EL1h)
 
 /*
- * ESR_EL1, Exception Syndrome Register (EL1)
+ * ESR_EL1, Exception Syndrome Register (EL1), page 2968 of Arm Architecture Reference Manual
  */
 #define ESR_ELx_EC_SHIFT			26
-#define ESR_ELx_EC_SVC64			0x15
+#define ESR_ELx_EC_SVC64			0x15		// Supervisor call when in aarch64 state
+#define ESR_ELx_EC_SVE				0x07		// Access to A-SIMD if trapped by CPACR_EL1
+#define ESR_ELx_EC_MSR				0x18		// Trapped msr, mrs or system instruction execution
+#define ESR_ELx_EC_SErr				0x2f		// SError interrupt
+#define ESR_ELx_EC_BEL				0x30		// Breakpoint exception from lower EL
+#define ESR_ELx_EC_BES				0x31		// Breakpoint exception from same EL
+#define ESR_ELx_EC_UNKNOWN			0x00		// Misc exceptions. see page 2972/3 (ISS encoding) for details
 
 #endif // ARM_SYSTEM_REGISTERS_H

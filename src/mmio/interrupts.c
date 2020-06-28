@@ -4,6 +4,7 @@
 #include <mmio/mmio.h>
 #include <serial/printf.h>
 #include <system/timer.h>
+#include <system/sysregs.h>
 
 char* const IRQ_NAMES[] = {
 	"Synchronous Exception EL1t",
@@ -48,7 +49,26 @@ void handle_irq_el1h(){
  * Prints information about the unhandled interrupt
  */
 void show_invalid_entry_message(uint8_t exception_type, uint64_t esr, uint64_t elr){
-	printf("Exception type: %s (0x%x); esr: 0x%0x; elr: 0x%0x\n", IRQ_NAMES[exception_type], exception_type, esr, elr);
+	printf("\
+[E] Exception type: %s (0x%02x);\n\
+--> esr: 0x%08x (ec: 0x%02x); elr: 0x%0x\n",
+			IRQ_NAMES[exception_type],
+			exception_type,
+			esr,
+			(esr>>ESR_ELx_EC_SHIFT)&0x3f,
+			elr
+		);
+}
+
+void handle_el0_64_unknown(uint64_t esr, uint64_t elr){
+	printf("\
+[E] An unknown exception occurred at EL0_64_SNC\n\
+--> esr: 0x%08x (ec: 0x%02x); elr: 0x%0x\n\
+--> likely due to insufficient permissions.\n",
+			esr,
+			(esr>>ESR_ELx_EC_SHIFT)&0x3f,
+			elr
+		);
 }
 
 

@@ -1,8 +1,7 @@
 # TODO
 
 ## Bugfixes
-- Currently seems to die if `get_exception_level()` is called from inside a user process.
-	- `CurrentEL` is not accessible from EL0 processes, so this works fine.
+None that I'm aware of
 
 ## Exercises
 - 02/2 - Use `cpacr_el1` to enable FP/SIMD registers and remove `-mgeneral-regs-only` flag from compilation. Store these on interrupts etc.
@@ -10,7 +9,6 @@
 - 03/2 - Handle UART and miniUART interrupts, test with echo.
 - 04/2 - Allow task max lifetimes to change on init.
 - 04/4 - Allow unlimited number of tasks.
-- 05/1 - Handle sync exceptions when assessing invalid registers.
 
 
 ## Tests
