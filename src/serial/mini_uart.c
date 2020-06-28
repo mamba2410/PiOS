@@ -24,7 +24,7 @@ void mini_uart_init(){
 	mmio_put32(AUX_ENABLES, 1);			// Enable mini uart
 	mmio_put32(AUX_MU_CNTL_REG, 0);		// Disable auto flow control and disable rx/tx for now
 
-	mmio_put32(AUX_MU_IER_REG, 0);		// Disable rx/tx interrupts
+	mmio_put32(AUX_MU_IER_REG, AUX_MU_IER_REG_VAL);		// Set interrupts
 	mmio_put32(AUX_MU_LCR_REG, 3);		// Enable 8-bit mode
 	mmio_put32(AUX_MU_MCR_REG, 0);		// Set RTS line always high
 	mmio_put32(AUX_MU_BAUD_REG, MINI_UART_REG_VAL);	// Set baud rate to 115200

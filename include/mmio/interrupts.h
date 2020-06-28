@@ -25,12 +25,19 @@
 #define REGISTER_FRAME_SIZE 0x110
 #define X0_REGISTER_OFFSET	0x0
 
+/*
+ *	Values from page 113 of ARM peripherals manual
+ */
 #define EMPTY_IRQ			0x0
 #define SYSTEM_TIMER_IRQ_0	(1 << 0)
 #define SYSTEM_TIMER_IRQ_1	(1 << 1)
 #define SYSTEM_TIMER_IRQ_2	(1 << 2)
 #define SYSTEM_TIMER_IRQ_3	(1 << 3)
+#define AUX_IRQ				(1 << 29)
+#define UART_IRQ			(1 << (57-32))	// Interrupt 57, inreg 2 so sub 32 to get shift
 
+#define IER_1_VALUE			( SYSTEM_TIMER_IRQ_0 | AUX_IRQ )
+#define IER_2_VALUE			( UART_IRQ )
 
 #ifndef __ASSEMBLER__
 
@@ -40,6 +47,9 @@ extern void mask_irq();
 extern void unmask_irq();
 
 void handle_irq_el1h();
+void handle_el0_64_unknown();
+void handle_aux_irq();
+void handle_uart_irq();
 void show_invalid_entry_message(uint8_t exception_type, uint64_t esr, uint64_t elr);
 void enable_interrupt_controller();
 

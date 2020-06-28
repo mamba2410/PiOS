@@ -33,16 +33,38 @@ char* const IRQ_NAMES[] = {
 void handle_irq_el1h(){
 	//uint32_t irq = mmio_get32(IRQ_PENDING_1);	// Get the IRQ
 	uint32_t irq;
-
+	
 	while( (irq = mmio_get32(IRQ_PENDING_1)) ){		// While there is an IRQ pending
 		switch(irq){								// Which IRQ is pending?
 			case SYSTEM_TIMER_IRQ_1:				// If its system timer 1...
 				handle_system_timer();				// ...call a separate function
 				break;	
+			case AUX_IRQ:							// Handle auxiliary iRQ (mini uart?)
+				handle_aux_irq();
+				break;
 			default:								// Else
 				printf("Unknown pending irq: %x\n", irq);	// The IRQ is unrecognised and ignored
 		}
 	}	
+
+	while( (irq = mmio_get32(IRQ_PENDING_2)) ){
+		switch(irq){
+			case UART_IRQ:
+				handle_uart_irq();					// Handle uart0 irq
+				break;
+			default:								// Else
+				printf("Unknown pending irq: %x\n", irq);	// The IRQ is unrecognised and ignored
+		}
+	}
+}
+
+void handle_aux_irq(){
+	//printf("Auxiliary IRQ triggered\n");
+	mini_uart_putc(mini_uart_getc());
+}
+
+void handle_uart_irq(){
+	printf("UART IRQ triggered\n");
 }
 
 /*
@@ -76,5 +98,6 @@ void handle_el0_64_unknown(uint64_t esr, uint64_t elr){
  * Enables the interrupt controller
  */
 void enable_interrupt_controller(){
-	mmio_put32(ENABLE_IRQS_1, SYSTEM_TIMER_IRQ_1);
+	mmio_put32(ENABLE_IRQS_1, IER_1_VALUE);
+	mmio_put32(ENABLE_IRQS_2, IER_2_VALUE);
 }
