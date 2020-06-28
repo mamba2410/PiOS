@@ -1,6 +1,20 @@
 #ifndef UART0_H
 #define UART0_H
 
+#define IMSC_TXIM			(1<<5)
+#define IMSC_RXIM			(1<<4)
+#define IMSC_MASK_ALL		(0x7f2)
+
+#define LCRH_VALUE			((1<<4)|(3<<5))			// Enable FIFO, 8-bit word length
+#define  ICR_VALUE			(IMSC_MASK_ALL)			// Interrupt clear register, clear all
+#define IMSC_VALUE			(IMSC_RXIM)				// Interrupt mask set/clear, allow RX interrupts
+#define   CR_VALUE			((1<<0)|(1<<8)|(1<<9))	// Enable UART, RX and TX
+
+/*
+ *	Note on IMSC: Setting the mask bit as high ENABLES the interrupt
+ */
+
+
 void  uart0_init();			// Initialise uart0
 
 void  uart0_putc(char);		// Put character onto uart0

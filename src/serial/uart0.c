@@ -41,14 +41,12 @@ void uart0_init(){
 	mmio_delay(150);					// Delay 150 clock cycles
 	mmio_put32(GPPUDCLK0, 0);			// End pulse
 
-
-	mmio_put32(UART0_ICR, ICR_VALUE);	// Clear pending interrupts
-
 	mmio_put32(UART0_IBRD, 1);			// Hardcoded to 115200 @ 3MHz
 	mmio_put32(UART0_FBRD, 40);
 
 	mmio_put32(UART0_LCRH, LCRH_VALUE);	// Enable FIFO and 8 bit words, no parity
-	mmio_put32(UART0_IMSC, IMSC_VALUE);	// Mask all interrupts
+	mmio_put32(UART0_IMSC, IMSC_VALUE);	// Mask/enable interrupts
+	mmio_put32(UART0_ICR, IMSC_MASK_ALL);	// Clear pending interrupts
 	mmio_put32(UART0_CR, CR_VALUE);		// Enable uart0 and rx/tx parts of uart
 }
 

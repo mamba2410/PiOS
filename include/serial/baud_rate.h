@@ -21,12 +21,5 @@
 
 #define IBRD_VALUE			(uint32_t)(BAUD_RATE_DIVIDER)
 #define FBRD_VALUE			(uint32_t)(BAUD_RATE_FRACTION)
-#define LCRH_VALUE			((1<<4)|(3<<5))			// Enable FIFO, 8-bit word length
-#define  ICR_VALUE			(0x7F2)
-#define IMSC_VALUE			(0x7F2)					// Mask all interrupts, some bits are unsupported
-#define   CR_VALUE			((1<<0)|(1<<8)|(1<<9))	// Enable UART, RX and TX
-
-
-
 
 #endif /* BAUD_RATE_H */

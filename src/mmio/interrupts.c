@@ -2,7 +2,9 @@
 #include <addresses/irq.h>
 #include <mmio/interrupts.h>
 #include <mmio/mmio.h>
+#include <serial/mini_uart.h>
 #include <serial/printf.h>
+#include <serial/uart0.h>
 #include <system/timer.h>
 #include <system/sysregs.h>
 
@@ -31,7 +33,6 @@ char* const IRQ_NAMES[] = {
  * Handles known interrupts in EL1h
  */
 void handle_irq_el1h(){
-	//uint32_t irq = mmio_get32(IRQ_PENDING_1);	// Get the IRQ
 	uint32_t irq;
 	
 	while( (irq = mmio_get32(IRQ_PENDING_1)) ){		// While there is an IRQ pending
@@ -58,13 +59,28 @@ void handle_irq_el1h(){
 	}
 }
 
+/*
+ *	Handle interrupts from the AUX.
+ *	I think it's just mini uart but I could be wrong.
+ *	Note: ALL interrupts from the aux will be handled here so make sure
+ *	to properly distinguish between them.
+ *	This is lazy and should be changed if any other interrupts are enabled.
+ *	See page 10 of 2835 peripherals manual. Proper way to do it is to check 
+ *	which interrupt was generated
+ */
 void handle_aux_irq(){
-	//printf("Auxiliary IRQ triggered\n");
-	mini_uart_putc(mini_uart_getc());
+	// TODO: Code does not link if I uncomment this and am not using mini uart as printf
+	//mini_uart_putc(mini_uart_getc());
 }
 
+/*
+ *	Handle all interrupts from the PL011 UART
+ *	Again, this handles all interrupts form the PL011 UART so should really
+ *	poll to see which interrupt was actually generated before responding.
+ *	This is only designed for UART_RX
+ */
 void handle_uart_irq(){
-	printf("UART IRQ triggered\n");
+	uart0_putc( uart0_getc() );
 }
 
 /*
