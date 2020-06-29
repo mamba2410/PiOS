@@ -3,10 +3,12 @@
 ## Bugfixes
 None that I'm aware of
 
+# Frontburner
+For now, exercises.
+Warm me up for virtual memory.
+
 ## Exercises
 - 02/2 - Use `cpacr_el1` to enable FP/SIMD registers and remove `-mgeneral-regs-only` flag from compilation. Store these on interrupts etc.
-- 03/1 - Allow use of local timer for timer interrupts.
-- 03/2 - Handle UART and miniUART interrupts, test with echo.
 - 04/2 - Allow task max lifetimes to change on init.
 - 04/4 - Allow unlimited number of tasks.
 
@@ -15,7 +17,7 @@ None that I'm aware of
 - Print memory map when tasks switch etc. Make sure sp etc are in the right place.
 
 
-## Features
+## Features/Research
 - User processes
 	- `fork` `kfork` `clone` `kclone` etc
 - Virtual memory
@@ -34,13 +36,6 @@ None that I'm aware of
 	- Maybe get an echo loop, if input `r` and `h` in serial, reset and halt
 - Change schedule function at compilation
 	- Configs like `SCHEDULER_CFS` and `SCHEDULER_RR` etc
-
-## Optimisation
-- Change `mmio_get32()` and `mmio_put32()` to be more efficient.
-- Change mailboxes to use bit fields
-	- Mailboxes should just be better implemented in general
-
-## Research
 - Mailboxes, how they work, how to interact etc
 - Different scheduler types
 	- Round robin
@@ -49,3 +44,5 @@ None that I'm aware of
 - Filesystems
 	- [FAT32](https://github.com/bztsrc/raspi3-tutorial/tree/master/0C_directory)
 	- ext4
+
+
