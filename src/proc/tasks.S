@@ -1,4 +1,4 @@
-#include <system/tasks.h>
+#include <proc/tasks.h>
 
 .global cpu_switch_task
 cpu_switch_task:

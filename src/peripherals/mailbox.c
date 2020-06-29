@@ -1,6 +1,6 @@
 #include <addresses/mailbox.h>
-#include <mmio/mailbox.h>
-#include <mmio/mmio.h>
+#include <peripherals/mailbox.h>
+#include <peripherals/mmio.h>
 
 volatile uint32_t __attribute__((aligned(16))) mailbox[36];
 

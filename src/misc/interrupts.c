@@ -1,12 +1,12 @@
 #include <stdint.h>
+#include <sysregs.h>
 #include <addresses/irq.h>
-#include <mmio/interrupts.h>
-#include <mmio/mmio.h>
-#include <serial/mini_uart.h>
-#include <serial/printf.h>
-#include <serial/uart0.h>
-#include <system/timer.h>
-#include <system/sysregs.h>
+#include <misc/interrupts.h>
+#include <misc/printf.h>
+#include <peripherals/mmio.h>
+#include <peripherals/mini_uart.h>
+#include <peripherals/uart0.h>
+#include <peripherals/timer.h>
 
 char* const IRQ_NAMES[] = {
 	"Synchronous Exception EL1t",
@@ -112,6 +112,7 @@ void handle_el0_64_unknown(uint64_t esr, uint64_t elr){
 
 /*
  * Enables the interrupt controller
+ * move to proc/irq_ctl.c?
  */
 void enable_interrupt_controller(){
 	mmio_put32(ENABLE_IRQS_1, IER_1_VALUE);

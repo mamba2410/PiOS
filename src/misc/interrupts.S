@@ -1,12 +1,10 @@
-#include <mmio/interrupts.h>
-#include <system/syscalls.h>
-#include <system/sysregs.h>
+#include <misc/interrupts.h>
+#include <misc/syscalls.h>
+#include <sysregs.h>
 
-	.macro vector_table_entry	vector_label	// Define a macro to handle adding vector entries
-	.align	7									// Vectors need to be offset 0x80 from each other
-	b		\vector_label						// Immediately branch to new location since we only have 0x80 bytes of code to play with here
-	.endm										// End the macro
-
+/*
+ * ======== handle_invalid_entry ========
+ */
 	.macro handle_invalid_entry	exception_level,type	// Macro to handle interrupts we don't care about. Using macros to leave registers untouched
 	save_registers \exception_level				// Macro to save the processor state
 	mov		x0, #\type							// Prepare arguments for the function call
@@ -18,6 +16,9 @@
 	.endm										// End the macro
 
 
+/*
+ * ======== save_registers ========
+ */
 	.macro save_registers, exception_level		// Save the registers before handling an interrupt
 	sub		sp, sp, #REGISTER_FRAME_SIZE		// Move the stack pointer to below the register frame
 	stp		x0,  x1,  [sp, #0x10 * 0]			// Store pair(?) of registers to above the stack
@@ -49,6 +50,9 @@
 	.endm
 	
 
+/*
+ * ======== populate_regisers ========
+ */
 	.macro populate_registers, exception_level	// Repopulate registers after handling an interrupt
 	ldp		x30, x21, [sp, #0x10 * 15]			// Load x30 and sp
 	.if \exception_level==0						// Are we EL0?
@@ -79,7 +83,22 @@
 	.endm
 
 
-// Exception vector table, all vectors must be 0x80 bytes apart and must not be larger than 0x80 bytes
+/*
+ * ======== vector_table_entry ========
+ */
+	.macro vector_table_entry	vector_label	// Define a macro to handle adding vector entries
+	.align	7									// Vectors need to be offset 0x80 from each other
+	b		\vector_label						// Immediately branch to new location since we only have 0x80 bytes of code to play with here
+	.endm										// End the macro
+
+
+
+/*
+ * ======== VECTOR TABLE ========
+ * Exception vector table, all vectors must be 0x80 bytes apart and must not be larger than 0x80 bytes
+ * Labels are not defined in this file, they are defined in the handler file.
+ * 
+ */
 .align 11
 .global vector_table
 vector_table:
@@ -103,17 +122,9 @@ vector_table:
 	vector_table_entry	fiq_invalid_el0_32		// Fast interrupt at el0 32-bit, invalid
 	vector_table_entry	err_invalid_el0_32		// Error interrupt at el0 32-bit, invalid (for now)
 
-
-.global mask_irq
-mask_irq:					// Mask IRQs for all exception levels 
-	msr		daifset, #2		// DAIF - Debug Asynchronous Irq Frq
-	ret
-
-.global unmask_irq
-unmask_irq:					// Unmask IRQs for all exception levels
-	msr		daifclr, #2
-	ret
-
+/*
+ * Set the vector table
+ */
 .global interrupt_vector_table_init
 interrupt_vector_table_init:	// Initialise the vector table
 	adr 	x0, vector_table	// Get the vector table address
@@ -121,6 +132,11 @@ interrupt_vector_table_init:	// Initialise the vector table
 	ret							// Return
 
 
+
+
+/*
+ * ======== EXCEPTION HANDLING ========
+ */
 
 // Valid (handled) exceptions
 

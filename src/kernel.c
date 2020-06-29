@@ -1,14 +1,12 @@
 #include <stdint.h>
-#include <mmio/interrupts.h>
-#include <mmio/mailbox.h>
-#include <mmio/mmio.h>
-#include <serial/baud_rate.h>
-#include <serial/printf.h>
-#include <system/fork.h>
-#include <system/syscalls.h>
-#include <system/timer.h>
-#include <system/tasks.h>
 #include <testing.h>
+#include <misc/interrupts.h>
+#include <misc/printf.h>
+#include <peripherals/timer.h>
+#include <peripherals/uart0.h>
+#include <peripherals/mini_uart.h>
+#include <proc/irq_ctl.h>
+#include <proc/tasks.h>
 
 extern uint64_t get_exception_level();
 

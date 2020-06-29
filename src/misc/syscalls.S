@@ -1,4 +1,4 @@
-#include <system/syscalls.h>
+#include <misc/syscalls.h>
 
 /*
  * Wrapper function for the write syscall	

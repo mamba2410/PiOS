@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <memory/mem.h>
-#include <mmio/interrupts.h>
-#include <system/tasks.h>
+#include <proc/irq_ctl.h>
+#include <proc/tasks.h>
 
 // Global variables
 static task_t init_task = INIT_TASK_STRUCT;

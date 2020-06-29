@@ -1,8 +1,8 @@
 #include <addresses/gpio.h>
 #include <addresses/mini_uart.h>
-#include <mmio/mmio.h>
-#include <serial/baud_rate.h>
-#include <serial/mini_uart.h>
+#include <peripherals/mmio.h>
+#include <peripherals/baud_rate.h>
+#include <peripherals/mini_uart.h>
 
 /*
  * Initialise mini uart for io

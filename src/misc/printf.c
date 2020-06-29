@@ -1,8 +1,6 @@
 #include <stdint.h>
 #include <stdarg.h>
-#include <serial/printf.h>
-#include <serial/uart0.h>
-#include <serial/mini_uart.h>
+#include <misc/printf.h>
 
 static char *putc_str = (char*)0;
 static uint16_t putc_str_end = 0;
@@ -172,8 +170,10 @@ void printf(char *format, ...){
 	va_list va;
 	va_start(va, format);
 #ifdef PRINTF_UART0
+#include <peripherals/uart0.h>
 	_format(format, va, &uart0_putc);
 #else
+#include <peripherals/mini_uart.h>
 	_format(format, va, &mini_uart_putc);
 #endif /* PRINTF_UART0 */
 	va_end(va);

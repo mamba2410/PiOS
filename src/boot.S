@@ -1,5 +1,5 @@
 #include <memory/mem.h>
-#include <system/sysregs.h>
+#include <sysregs.h>
 
 .section ".text.boot"			// Put all of this in .text.boot
 

@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-void testing_process();
+void testing_main();
 
 void example_process(char*);
 void user_process();

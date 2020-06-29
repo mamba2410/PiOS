@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <memory/mem.h>
-#include <system/fork.h>
-#include <system/tasks.h>
+#include <proc/fork.h>
+#include <proc/tasks.h>
 
 /*
  * Prepares a new task and adds it to the processes array

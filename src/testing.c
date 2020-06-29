@@ -1,10 +1,9 @@
 #include <testing.h>
-
-#include <mmio/mmio.h>
-#include <serial/printf.h>
-#include <system/fork.h>
-#include <system/syscalls.h>
-#include <system/tasks.h>
+#include <peripherals/mmio.h>
+#include <misc/printf.h>
+#include <misc/syscalls.h>
+#include <proc/fork.h>
+#include <proc/tasks.h>
 
 extern uint64_t get_exception_level();
 
@@ -31,8 +30,8 @@ void user_process(){
 	uint64_t stack;
 	int32_t error;
 
-	sprintf(buf, "User process started at EL%d\n", get_exception_level());
-	call_sys_write(buf);
+	//sprintf(buf, "User process started at EL%d\n", get_exception_level());
+	//call_sys_write(buf);
 
 	char ep_str1[8] = "12345";
 	char ep_str2[8] = "abcde";

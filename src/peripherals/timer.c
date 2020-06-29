@@ -1,8 +1,8 @@
 #include <stdint.h>
 #include <addresses/timer.h>
-#include <mmio/mmio.h>
-#include <system/tasks.h>
-#include <system/timer.h>
+#include <peripherals/mmio.h>
+#include <proc/tasks.h>
+#include <peripherals/timer.h>
 
 static const uint32_t SYSTEM_TIMER_INTERVAL = 200000;
 static uint32_t current_timer_value = 0;

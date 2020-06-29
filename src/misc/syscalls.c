@@ -1,9 +1,8 @@
 #include <stdint.h>
 #include <memory/mem.h>
-#include <serial/printf.h>
-#include <system/fork.h>
-#include <system/timer.h>
-#include <system/syscalls.h>
+#include <misc/printf.h>
+#include <misc/syscalls.h>
+#include <proc/fork.h>
 
 
 /*

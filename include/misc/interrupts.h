@@ -42,9 +42,8 @@
 #ifndef __ASSEMBLER__
 
 #include <stdint.h>
+
 extern void interrupt_vector_table_init();
-extern void mask_irq();
-extern void unmask_irq();
 
 void handle_irq_el1h();
 void handle_el0_64_unknown();
