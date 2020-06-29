@@ -31,7 +31,8 @@ void user_process(){
 	int32_t error;
 
 	//sprintf(buf, "User process started at EL%d\n", get_exception_level());
-	//call_sys_write(buf);
+	sprintf(buf, "User process started at EL%d\n", 0);
+	call_sys_write(buf);
 
 	char ep_str1[8] = "12345";
 	char ep_str2[8] = "abcde";

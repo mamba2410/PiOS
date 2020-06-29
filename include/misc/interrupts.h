@@ -36,7 +36,7 @@
 #define AUX_IRQ				(1 << 29)
 #define UART_IRQ			(1 << (57-32))	// Interrupt 57, inreg 2 so sub 32 to get shift
 
-#define IER_1_VALUE			( SYSTEM_TIMER_IRQ_0 | AUX_IRQ )
+#define IER_1_VALUE			( SYSTEM_TIMER_IRQ_1 | AUX_IRQ )
 #define IER_2_VALUE			( UART_IRQ )
 
 #ifndef __ASSEMBLER__
