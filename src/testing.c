@@ -8,9 +8,11 @@
 extern uint64_t get_exception_level();
 
 void testing_main(){
-	int32_t result;
-	result = create_process(PF_KERNEL_THREAD, (uint64_t)(&kernel_process), 0, 0);
-	if( result < 0 ){ printf("Error whilst starting kernel process\n"); return; }
+	//int32_t result;
+	//result = create_process(PF_KERNEL_THREAD, (uint64_t)(&kernel_process), 0, 0);
+	//if( result < 0 ){ printf("Error whilst starting kernel process\n"); return; }
+
+	while(1);
 }
 
 // Just repeatedly print the first 5 characters of a given string

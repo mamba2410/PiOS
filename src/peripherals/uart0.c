@@ -54,16 +54,16 @@ void uart0_init(){
  * Put character on the uart0 line
  */
 void uart0_putc(char c){
-	while( mmio_get32(UART0_FR) & (1<<5) );		// Wait for flag register to say its okay
-	mmio_put32(UART0_DR, c);					// Put the character into the register
+	while( mmio_get32(UART0_FR) & UART0_FR_TXFF );	// Wait while tx fifo is full
+	mmio_put32(UART0_DR, c);						// Put char into fifo when not full
 }
 
 /*
  * Get a character from the uart0 line
  */
 char uart0_getc(){
-	while( mmio_get32(UART0_FR) & (1<<4) );		// Wait for flag register to say its okay
-	return mmio_get32(UART0_DR);				// Read and return from data register
+	while( mmio_get32(UART0_FR) & UART0_FR_RXFE );	// Wait while rx fifo is empty
+	return mmio_get32(UART0_DR);					// read char from fifo when not empty
 }
 
 /*
@@ -72,6 +72,19 @@ char uart0_getc(){
 void uart0_puts(char *s){
 	for(int i = 0; s[i] != '\0'; i++)			// For each non-null character
 		uart0_putc(s[i]);						// Put the character onto the uart
+}
+
+void uart0_irq(){
+	uint8_t i;
+
+	/*
+	 *	Handle receive interrupts
+	 */
+	char buf[9];
+	for(i = 0; !( mmio_get32(UART0_FR) & UART0_FR_RXFE ); i++){	// While rx fifo not empty
+		buf[i] = uart0_getc();									// Put data in buffer
+		uart0_putc(buf[i]);										// For now, echo right back
+	}	// FIFO is saved in `buf` with length `i`
 }
 
 /*

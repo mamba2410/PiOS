@@ -1,3 +1,9 @@
 #!/bin/sh
-#qemu-system-aarch64 -M raspi3 -kernel kernel8.img -display none -serial null -serial stdio
-qemu-system-aarch64 -M raspi3 -kernel kernel8.img -display none -serial stdio -serial null
+
+if [ "$1" = "m" ]; then
+	# stdio is mini uart
+	qemu-system-aarch64 -M raspi3 -kernel kernel8.img -display none -serial null -serial stdio
+else 
+	# stdio is pl011 uart
+	qemu-system-aarch64 -M raspi3 -kernel kernel8.img -display none -serial stdio -serial null
+fi

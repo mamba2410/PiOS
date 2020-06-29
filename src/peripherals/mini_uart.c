@@ -67,6 +67,19 @@ void mini_uart_puts(char* s){
 	}
 }
 
+void mini_uart_irq(){
+	uint8_t i;
+
+	/*
+	 * Handle RX interrupts
+	 */
+	char buf[9];
+	for( i=0; mmio_get32(AUX_MU_LSR_REG)&0x01 ; i++ ){
+		buf[i] = mini_uart_getc();
+		mini_uart_putc(buf[i]);
+	}
+}
+
 /*
  * Get a string from the mini uart line
  */

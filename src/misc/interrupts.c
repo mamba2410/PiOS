@@ -49,12 +49,13 @@ void handle_irq_el1h(){
 	}	
 
 	while( (irq = mmio_get32(IRQ_PENDING_2)) ){
+		printf("");
 		switch(irq){
 			case UART_IRQ:
-				handle_uart_irq();					// Handle uart0 irq
+				uart0_irq();						// Handle uart0 irq
 				break;
 			default:								// Else
-				printf("Unknown pending irq: %x\n", irq);	// The IRQ is unrecognised and ignored
+				printf("Unknown pending irq: %x\n", irq+32);	// The IRQ is unrecognised and ignored
 		}
 	}
 }
@@ -69,19 +70,9 @@ void handle_irq_el1h(){
  *	which interrupt was generated
  */
 void handle_aux_irq(){
-	// TODO: Code does not link if I uncomment this and am not using mini uart as printf
-	//mini_uart_putc(mini_uart_getc());
+	mini_uart_irq();
 }
 
-/*
- *	Handle all interrupts from the PL011 UART
- *	Again, this handles all interrupts form the PL011 UART so should really
- *	poll to see which interrupt was actually generated before responding.
- *	This is only designed for UART_RX
- */
-void handle_uart_irq(){
-	uart0_putc( uart0_getc() );
-}
 
 /*
  * Prints information about the unhandled interrupt
