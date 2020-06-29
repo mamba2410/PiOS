@@ -21,26 +21,23 @@ void mini_uart_init(){
 	mmio_delay(150);					// Delay 150 clock cycles
 	mmio_put32(GPPUDCLK0, 0);			// Clear pulse
 
-	mmio_put32(AUX_ENABLES, 1);			// Enable mini uart
-	mmio_put32(AUX_MU_CNTL_REG, 0);		// Disable auto flow control and disable rx/tx for now
+	mmio_put32(AUX_ENABLES, AUX_ENABLES_VALUE);			// Enable mini uart
+	mmio_put32(AUX_MU_CNTL_REG, 0);						// Disable auto flow control and disable rx/tx for now
 
-	mmio_put32(AUX_MU_IER_REG, AUX_MU_IER_REG_VAL);		// Set interrupts
-	mmio_put32(AUX_MU_LCR_REG, 3);		// Enable 8-bit mode
-	mmio_put32(AUX_MU_MCR_REG, 0);		// Set RTS line always high
-	mmio_put32(AUX_MU_BAUD_REG, MINI_UART_REG_VAL);	// Set baud rate to 115200
+	mmio_put32(AUX_MU_IER_REG, AUX_MU_IER_VALUE);		// Set interrupts
+	mmio_put32(AUX_MU_LCR_REG, AUX_MU_LCR_8BIT);		// Enable 8-bit mode
+	mmio_put32(AUX_MU_MCR_REG, AUX_MU_MCR_VALUE);		// Set RTS line always high
+	mmio_put32(AUX_MU_BAUD_REG, MINI_UART_REG_VAL);		// Set baud rate
 
-	mmio_put32(AUX_MU_CNTL_REG, 3);		// Enable rx/tx
+	mmio_put32(AUX_MU_CNTL_REG, AUX_MU_CNTL_VALUE);		// Enable rx/tx
 }
 
 /*
  * Put a single character on the mini uart
  */
 void mini_uart_putc(char c){
-	while(1){									// Wait...
-		if( mmio_get32(AUX_MU_LSR_REG) & 0x20 )	// If register is ready to be written to
-			break;								// Break out of loop
-	}
-	mmio_put32(AUX_MU_IO_REG, c);				// Put character in the io register
+	while(!( mmio_get32(AUX_MU_LSR_REG) & AUX_MU_LSR_TXE ));	// Wait while we can't put things into TX FIFO
+	mmio_put32(AUX_MU_IO_REG, c);								// When we can, put char into FIFO
 }
 
 /*
@@ -48,12 +45,9 @@ void mini_uart_putc(char c){
  */
 char mini_uart_getc(){
 	char r;
-	while(1){									// Wait...
-		if( mmio_get32(AUX_MU_LSR_REG) & 0x01 )	// If register has data in it
-			break;								// Break out of loop
-	}
-	r = (mmio_get32(AUX_MU_IO_REG) & 0xff);		// Get character from io register
-	return (r=='\r')?'\n':r;					// If character is carriage return, send newline instead
+	while(!( mmio_get32(AUX_MU_LSR_REG) & AUX_MU_LSR_DR ));		// Wait until RX FIFO has data
+	r = (mmio_get32(AUX_MU_IO_REG) & 0xff);						// Get character from io register
+	return (r=='\r')?'\n':r;									// If character is carriage return, send newline instead
 }
 
 
@@ -74,7 +68,7 @@ void mini_uart_irq(){
 	 * Handle RX interrupts
 	 */
 	char buf[9];
-	for( i=0; mmio_get32(AUX_MU_LSR_REG)&0x01 ; i++ ){
+	for( i=0; mmio_get32(AUX_MU_LSR_REG)&AUX_MU_LSR_DR ; i++ ){
 		buf[i] = mini_uart_getc();
 		mini_uart_putc(buf[i]);
 	}
