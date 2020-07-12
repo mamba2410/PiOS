@@ -5,13 +5,12 @@
 #include <proc/fork.h>
 #include <proc/tasks.h>
 
-extern uint64_t get_exception_level();
-
 void testing_main(){
-	//int32_t result;
-	//result = create_process(PF_KERNEL_THREAD, (uint64_t)(&kernel_process), 0, 0);
-	//if( result < 0 ){ printf("Error whilst starting kernel process\n"); return; }
+	int32_t result;
+	result = create_process(PF_KERNEL_THREAD, (uint64_t)(&kernel_process), 0, 0);
+	if( result < 0 ){ printf("Error whilst starting kernel process\n"); return; }
 
+	/*
 	printf("cpu_context offset: %x\n", &((task_t*)0)->cpu_context);
 	printf("fpsimd_context offset: %x\n", &((task_t*)0)->fpsimd_context);
 	printf("state offset: %x\n", &((task_t*)0)->state);
@@ -21,17 +20,44 @@ void testing_main(){
 	printf("stack offset: %x\n", &((task_t*)0)->stack);
 	printf("flags offset: %x\n", &((task_t*)0)->flags);
 
+	set_q0(42);
+	set_q2(94);
+	set_q31(103);
+
+	printf("q0: %d\n", get_q0());
+	printf("q2: %d\n", get_q2());
+	printf("q31: %d\n", get_q31());
+	*/
+
 	while(1);
 }
 
 // Just repeatedly print the first 5 characters of a given string
 void example_process(char *str){
 	char buf[] = {0, 0};
+
+	if(str[0] == '1') {
+		set_q0(1);
+		set_q2(2);
+		set_q31(3);
+	} else {
+		set_q0(5);
+		set_q2(6);
+		set_q31(7);
+	}
+
 	while(1){
 		for(uint8_t i = 0; i < 5; i++){
-			buf[0] = str[i];
+			buf[0] = '0' + get_q0();
 			call_sys_write(buf);
 			mmio_delay(1e6);
+			buf[0] = '0' + get_q2();
+			call_sys_write(buf);
+			mmio_delay(1e6);
+			buf[0] = '0' + get_q31();
+			call_sys_write(buf);
+			mmio_delay(1e6);
+
 		}
 	}
 }

@@ -8,7 +8,6 @@ For now, exercises.
 Warm me up for virtual memory.
 
 ## Exercises
-- 02/2 - Use `cpacr_el1` to enable FP/SIMD registers and remove `-mgeneral-regs-only` flag from compilation. Store these on interrupts etc.
 - 04/2 - Allow task max lifetimes to change on init.
 - 04/4 - Allow unlimited number of tasks.
 
