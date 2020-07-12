@@ -1,7 +1,10 @@
 #ifndef TASKS_H
 #define TASKS_H
 
-#define CPU_CONTEXT_OFFSET	0		// cpu_context is the first member of task_t, so has no offset
+#define CPU_CONTEXT_OFFSET		0x000		// cpu_context is the first member of task_t, so has no offset
+#define FPSIMD_CONTEXT_OFFSET	0x070		// fpsimd_context is after cpu_context which is 0x70 bytes 
+#define STATE_OFFSET			0x280		// state offset in task_t
+
 
 #ifndef __ASSEMBLER__
 #include <stdint.h>
@@ -30,16 +33,23 @@ typedef struct {
 	uint64_t x26;
 	uint64_t x27;
 	uint64_t x28;
-	union{
-	uint64_t fp;	// x29, frame pointer
-	uint64_t x29;
-	};
-	union{
-	uint64_t pc;	// x30, program counter / link register
-	uint64_t x30;
-	};
-	uint64_t sp;	//		stack pointer
+	union{ uint64_t x29; uint64_t fp; };	// x29/frame pointer
+	union{ uint64_t x30; uint64_t pc; };	// x30/program counter
+	uint64_t sp;							// stack pointer
 } cpu_context_t;
+
+/*
+ * FP/SIMD context struct
+ * Store all SIMD registers (which are 128 bits wide) as well as the 
+ * control and status registers.
+ * I an unsure why we save these here and not on an interrupt. Are these
+ * expected to not be modified when a context switch occurs?
+ */
+typedef struct {
+	__uint128_t vregs[32];
+	uint32_t fpsr;
+	uint32_t fpcr;
+} fpsimd_context_t;
 
 /*
  * Struct for a task
@@ -50,7 +60,8 @@ typedef struct {
  * the priority of the task, a measure of how long the task can last
  */
 typedef struct {
-	cpu_context_t cpu_context;
+	cpu_context_t cpu_context;			// 0x
+	fpsimd_context_t fpsimd_context;
 	int64_t  state;
 	int64_t  lifetime;
 	int64_t  can_preempt;

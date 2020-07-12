@@ -12,6 +12,15 @@ void testing_main(){
 	//result = create_process(PF_KERNEL_THREAD, (uint64_t)(&kernel_process), 0, 0);
 	//if( result < 0 ){ printf("Error whilst starting kernel process\n"); return; }
 
+	printf("cpu_context offset: %x\n", &((task_t*)0)->cpu_context);
+	printf("fpsimd_context offset: %x\n", &((task_t*)0)->fpsimd_context);
+	printf("state offset: %x\n", &((task_t*)0)->state);
+	printf("lifetime offset: %x\n", &((task_t*)0)->lifetime);
+	printf("can_preempt offset: %x\n", &((task_t*)0)->can_preempt);
+	printf("priority offset: %x\n", &((task_t*)0)->priority);
+	printf("stack offset: %x\n", &((task_t*)0)->stack);
+	printf("flags offset: %x\n", &((task_t*)0)->flags);
+
 	while(1);
 }
 
