@@ -1,9 +1,13 @@
 #!/bin/sh
 
-if [ "$1" = "m" ]; then
-	# stdio is mini uart
-	qemu-system-aarch64 -M raspi3 -kernel kernel8.img -display none -serial null -serial stdio
-else 
-	# stdio is pl011 uart
-	qemu-system-aarch64 -M raspi3 -kernel kernel8.img -display none -serial stdio -serial null
-fi
+board="raspi3"
+kernel="kernel8.img"
+ioflags=""
+
+case $1 in
+	"m") ioflags="-serial null -serial stdio"; break;;
+	"i") ioflags="-monitor stdio"; break;;
+	*)	 ioflags="-serial stdio -serial null"; break;;
+esac
+
+qemu-system-aarch64 -M $board -kernel $kernel -display none $ioflags
