@@ -1,10 +1,10 @@
 #ifndef TIMER_H
 #define TIMER_H
 
-#define TIMER_CS_M0	(1 << 0)
-#define TIMER_CS_M1	(1 << 1)
-#define TIMER_CS_M2	(1 << 2)
-#define TIMER_CS_M3	(1 << 3) 
+#define SYSTEM_TIMER_CS_M0	(1 << 0)
+#define SYSTEM_TIMER_CS_M1	(1 << 1)
+#define SYSTEM_TIMER_CS_M2	(1 << 2)
+#define SYSTEM_TIMER_CS_M3	(1 << 3) 
 
 
 /*
