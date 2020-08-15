@@ -36,49 +36,38 @@ char* const IRQ_NAMES[] = {
 void handle_irq_el1h(){
 	uint32_t irq;
 
+	// Peripheral IRQs, register 1
 	while( (irq = mmio_get32(IRQ_PENDING_1)) ){		// While there is an IRQ pending
 		switch(irq){								// Which IRQ is pending?
-			case SYSTEM_TIMER_IRQ_1:				// If its system timer 1...
-				handle_system_timer();				// ...call a separate function
-				break;	
-			case AUX_IRQ:							// Handle auxiliary iRQ (mini uart?)
-				handle_aux_irq();
-				break;
-			default:								// Else
-				printf("Unknown pending irq: %x\n", irq);	// The IRQ is unrecognised and ignored
+			case SYSTEM_TIMER_IRQ_1: handle_system_timer(); break;	
+			case AUX_IRQ: handle_aux_irq(); break;
+			default: printf("[E] Unknown pending irq (p): %x\n", irq);	// The IRQ is unrecognised and ignored
 		}
 	}	
 
+	// Peripheral IRQs, register 2
 	while( (irq = mmio_get32(IRQ_PENDING_2)) ){
 		switch(irq){
-			case UART_IRQ:
-				uart0_irq();						// Handle uart0 irq
-				break;
-			default:								// Else
-				printf("Unknown pending irq: %x\n", irq+32);	// The IRQ is unrecognised and ignored
+			case UART_IRQ: uart0_irq(); break;
+			default: printf("[E] Unknown pending irq (p): %x\n", irq+32);	// The IRQ is unrecognised and ignored
 		}
 	}
 
+	// Core-specific )RQs, core 0
 	while( (irq=mmio_get32(LOCAL_TIMER_CORE0_IRQ_REG)) ) {
 		switch(irq) {
-			case LOCAL_TIMER_IRQ:	
-				handle_local_timer();				// Handle BCM local timer
-				break;
-			default:
-				printf("Unknown pending irq (c): %x\n", irq);	// The IRQ is unrecognised and ignored
+			case LOCAL_TIMER_IRQ: handle_local_timer(); break;
+			default: printf("[E] Unknown pending irq (c): %x\n", irq);	// The IRQ is unrecognised and ignored
 		}
 	}
 
+	// Baisc peripheral IRQs
 	while( (irq=mmio_get32(IRQ_BASIC_PENDING)) ) {
 		switch(irq) {
-			case LOCAL_TIMER_IRQ:
-				handle_local_timer();
-				break;
+			case LOCAL_TIMER_IRQ: handle_local_timer(); break;
 			case PENDING_IRQ1:
-			case PENDING_IRQ2:
-				break;
-			default:
-				printf("Unknown pending irq (b): %x\n", irq);
+			case PENDING_IRQ2: break;
+			default: printf("[E] Unknown pending irq (b): %x\n", irq);
 		}
 	}
 }

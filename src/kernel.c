@@ -18,17 +18,17 @@ void kernel_main(void){
 #else
 	mini_uart_init();
 #endif /* PRINTF_UART0 */
-	printf(" Kernel started at EL%d\n", get_exception_level());
+	printf("[K] Kernel started at EL%d\n", get_exception_level());
 	interrupt_vector_table_init();	// Initialise interrupt vector table
 	//system_timer_init();			// Initialise system timer
 	local_timer_init();				// Initialise the local timer
 	enable_interrupt_controller();	// Enable interrupt controller
 	unmask_irq();					// Allow IRQs
-	printf(" Setup done\n");
+	printf("[K] Setup done\n");
 
 	testing_main();					// Begin testing code
 
-	printf(" kernel_main done, scheduling\n");
+	printf("[K] kernel_main done, scheduling\n");
 	while(1) schedule();	// Schedule infinitely
 }	// Should not exit
 
