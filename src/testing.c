@@ -65,7 +65,7 @@ void user_process(){
 	if(error < 0){ printf("[E] Error whilst cloning user process 2\n"); return;}
 
 	printf("[T] Number of tasks running: %d\n", number_tasks);
-	printf("[T] Exiting from parent user process.");
+	printf("[T] Exiting from parent user process\n");
 
 	call_sys_exit();
 }

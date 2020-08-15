@@ -124,7 +124,7 @@ $(MISC_BIN): $(MISC_C_OBJ) $(MISC_S_OBJ) $(MISC_INC)
 # Link library dependencies after the library that needs it, try not to make things circular
 # Do not include extension as theres an object copy neededing to link
 MAIN_BIN		= ./build/target/kernel8
-MAIN_LINK_FILE	= ./build/linker.ld
+MAIN_LINK_FILE	= ./build/linker_physmem.ld
 MAIN_CC_FLAGS	= $(GLOBAL_CC_FLAGS)
 MAIN_LD_FLAGS	= $(GLOBAL_LD_FLAGS) -L'$(LIB_D)' -T $(MAIN_LINK_FILE) -lmisc -lperipherals -lproc -lmem
 MAIN_AS_FLAGS	= $(GLOBAL_AS_FLAGS)

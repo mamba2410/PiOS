@@ -28,7 +28,7 @@ processor_hang:					// If not, infi-loop
 el3_entry:
 	ldr		x0, =SCR_VALUE		// Load the secure configuration value
 	msr		scr_el3, x0			// Put this into the secure configuration register
-	mov		x0, SPSR_EL3_VALUE	// We want to mask all and go to EL2h
+	ldr		x0, =SPSR_EL3_VALUE	// We want to mask all and go to EL2h
 	msr		spsr_el3, x0		// Put that in the right register
 	adr		x0, el2_entry		// Load address of el2_entry
 	msr		elr_el3, x0			// Exception link is now el2_entry
@@ -48,7 +48,7 @@ el2_entry:
 	msr		vttbr_el2, xzr		// Store virtual address translation table base as zero, disabling stage 2 translation
 	mov		x0, #0x33ff
 	msr		cptr_el2, x0		// Disable coprocessors, traps to EL2 (not sure what this does but linux does it)
-	mov		x0, SPSR_EL2_VALUE	// Load the saved program status register value
+	ldr		x0, =SPSR_EL2_VALUE	// Load the saved program status register value
 	msr		spsr_el2, x0		// Put the spsr value in the register
 	adr		x0, el1_entry		// Load the el1_entry address to x0
 	msr		elr_el2, x0			// Load the exception link register with the address
