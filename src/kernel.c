@@ -12,6 +12,7 @@ extern uint64_t get_exception_level();
 
 // Main function passed to by boot.S
 void kernel_main(void){
+	mask_irq();
 #ifdef PRINTF_UART0
 	uart0_init();					// Initialise uart device
 #else

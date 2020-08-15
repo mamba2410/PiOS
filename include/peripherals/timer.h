@@ -58,19 +58,16 @@
 
 #include <stdint.h>
 
-void system_timer_init();
 void handle_system_timer();
+void system_timer_init();
 
-void arm_timer_init();
 void handle_arm_timer();
+void arm_timer_init();
 void arm_timer_irq_clear();
 uint8_t arm_timer_irq_status();
 
-void local_timer_init();
-void local_timer_clear_irq();
 void handle_local_timer();
-
-uint64_t get_local_timer_value();
-void set_local_timer_value(uint64_t);
+void local_timer_init();
+void local_timer_irq_clear();
 
 #endif /* TIMER_H */

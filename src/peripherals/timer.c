@@ -10,7 +10,7 @@
 
 static const uint32_t SYSTEM_TIMER_INTERVAL = 200000;	
 static const uint32_t ARM_TIMER_INTERVAL = 200000;
-static const uint32_t LOCAL_TIMER_INTERVAL = 2e5;		// 28-bit
+static const uint32_t LOCAL_TIMER_INTERVAL = (1<<26)-1;		// 28-bit, freq=38.4E6/interval
 
 static uint32_t system_timer_value = 0;
 
@@ -96,8 +96,7 @@ void local_timer_init() {
  *	Called when the local timer interrupts
  */
 void handle_local_timer() {
-	local_timer_clear_irq();
-	printf("[I] Local timer interrupt\n");
+	local_timer_irq_clear();
 	schedule_tick();
 }
 
@@ -105,6 +104,6 @@ void handle_local_timer() {
 /*
  *	Clear interrupts for the local timer
  */
-void local_timer_clear_irq() {
+void local_timer_irq_clear() {
 	mmio_put32(LOCAL_TIMER_CLR_REG, LOCAL_TIMER_INT_PENDING);
 }

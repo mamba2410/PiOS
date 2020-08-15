@@ -31,7 +31,7 @@ void testing_main(){
 	printf("q31: %d\n", get_q31());
 	*/
 
-	while(1);
+	while(1) schedule();
 }
 
 // Just repeatedly print the first 5 characters of a given string
