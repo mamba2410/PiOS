@@ -1,7 +1,6 @@
-bin/boot/kernel8.img
-bin/objects/*
-bin/kernel8.*
-bin/metadata/*
-bin/libs/*
+build/boot/kernel8.img
+build/logs/*
+build/metadata/.buildinfo
+build/target/*
 tags*
 types*

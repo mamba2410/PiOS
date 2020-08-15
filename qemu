@@ -1,7 +1,7 @@
 #!/bin/sh
 
 board="raspi3"
-kernel="kernel8.img"
+kernel="build/target/kernel8.img"
 ioflags=""
 
 case $1 in

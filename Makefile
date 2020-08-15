@@ -11,13 +11,13 @@ GLOBAL_CC_FLAGS = -ffreestanding -Wall -nostdlib -nostartfiles -MMD -fno-stack-p
 #GLOBAL_CC_FLAGS = -ffreestanding -Wall -nostdlib -nostartfiles -mgeneral-regs-only -MMD
 GLOBAL_AS_FLAGS = -MMD
 GLOBAL_LD_FLAGS =
-LIB_D = ./libs
+LIB_D = ./build/target/libs
 
 ###########################################################################################################
 # Build number tracking
 ###########################################################################################################
 
-BUILD_NUMBER_D = ./metadata
+BUILD_NUMBER_D = ./build/metadata
 include $(BUILD_NUMBER_D)/BuildNumber.mak
 
 ###########################################################################################################
@@ -29,9 +29,9 @@ MEMORY_BIN		= libmem.a
 MEMORY_CC_FLAGS	= $(GLOBAL_CC_FLAGS)
 MEMORY_LD_FLAGS	= $(GLOBAL_LD_FLAGS)
 MEMORY_AS_FLAGS	= $(GLOBAL_AS_FLAGS)
-MEMORY_SRC_D   	= ../src/memory
-MEMORY_INC_D   	= ../include
-MEMORY_OBJ_D   	= ./objects
+MEMORY_SRC_D   	= ./src/memory
+MEMORY_INC_D   	= ./include
+MEMORY_OBJ_D   	= ./build/target/objects
 MEMORY_C_SRC	= $(wildcard $(MEMORY_SRC_D)/*.c)
 MEMORY_S_SRC	= $(wildcard $(MEMORY_SRC_D)/*.S)
 MEMORY_INC		= $(wildcard $(MEMORY_INC_D)/*.h)
@@ -52,9 +52,9 @@ PERIPHERALS_BIN			= libperipherals.a
 PERIPHERALS_CC_FLAGS	= $(GLOBAL_CC_FLAGS) 
 PERIPHERALS_LD_FLAGS	= $(GLOBAL_LD_FLAGS)
 PERIPHERALS_AS_FLAGS	= $(GLOBAL_AS_FLAGS)
-PERIPHERALS_SRC_D   	= ../src/peripherals
-PERIPHERALS_INC_D   	= ../include
-PERIPHERALS_OBJ_D   	= ./objects
+PERIPHERALS_SRC_D   	= ./src/peripherals
+PERIPHERALS_INC_D   	= ./include
+PERIPHERALS_OBJ_D   	= ./build/target/objects
 PERIPHERALS_C_SRC		= $(wildcard $(PERIPHERALS_SRC_D)/*.c)
 PERIPHERALS_S_SRC		= $(wildcard $(PERIPHERALS_SRC_D)/*.S)
 PERIPHERALS_INC			= $(wildcard $(PERIPHERALS_INC_D)/*.h)
@@ -76,9 +76,9 @@ PROC_BIN		= libproc.a
 PROC_CC_FLAGS	= $(GLOBAL_CC_FLAGS)
 PROC_LD_FLAGS	= $(GLOBAL_LD_FLAGS)
 PROC_AS_FLAGS	= $(GLOBAL_AS_FLAGS)
-PROC_SRC_D   	= ../src/proc
-PROC_INC_D   	= ../include
-PROC_OBJ_D   	= ./objects
+PROC_SRC_D   	= ./src/proc
+PROC_INC_D   	= ./include
+PROC_OBJ_D   	= ./build/target/objects
 PROC_C_SRC		= $(wildcard $(PROC_SRC_D)/*.c)
 PROC_S_SRC		= $(wildcard $(PROC_SRC_D)/*.S)
 PROC_INC		= $(wildcard $(PROC_INC_D)/*.h)
@@ -99,9 +99,9 @@ MISC_BIN		= libmisc.a
 MISC_CC_FLAGS	= $(GLOBAL_CC_FLAGS)
 MISC_LD_FLAGS	= $(GLOBAL_LD_FLAGS)
 MISC_AS_FLAGS	= $(GLOBAL_AS_FLAGS)
-MISC_SRC_D   	= ../src/misc
-MISC_INC_D   	= ../include
-MISC_OBJ_D   	= ./objects
+MISC_SRC_D   	= ./src/misc
+MISC_INC_D   	= ./include
+MISC_OBJ_D   	= ./build/target/objects
 MISC_C_SRC	= $(wildcard $(MISC_SRC_D)/*.c)
 MISC_S_SRC	= $(wildcard $(MISC_SRC_D)/*.S)
 MISC_INC		= $(wildcard $(MISC_INC_D)/*.h)
@@ -123,13 +123,14 @@ $(MISC_BIN): $(MISC_C_OBJ) $(MISC_S_OBJ) $(MISC_INC)
 
 # Link library dependencies after the library that needs it, try not to make things circular
 # Do not include extension as theres an object copy neededing to link
-MAIN_BIN		= kernel8
+MAIN_BIN		= ./build/target/kernel8
+MAIN_LINK_FILE	= ./build/linker.ld
 MAIN_CC_FLAGS	= $(GLOBAL_CC_FLAGS)
-MAIN_LD_FLAGS	= $(GLOBAL_LD_FLAGS) -L'$(LIB_D)' -T linker.ld -lmisc -lperipherals -lproc -lmem
+MAIN_LD_FLAGS	= $(GLOBAL_LD_FLAGS) -L'$(LIB_D)' -T $(MAIN_LINK_FILE) -lmisc -lperipherals -lproc -lmem
 MAIN_AS_FLAGS	= $(GLOBAL_AS_FLAGS)
-MAIN_SRC_D    	= ../src
-MAIN_INC_D   	= ../include
-MAIN_OBJ_D    	= ./objects
+MAIN_SRC_D    	= ./src
+MAIN_INC_D   	= ./include
+MAIN_OBJ_D    	= ./build/target/objects
 MAIN_C_SRC		= $(wildcard $(MAIN_SRC_D)/*.c)
 MAIN_S_SRC		= $(wildcard $(MAIN_SRC_D)/*.S)
 MAIN_INC	  	= $(wildcard $(MAIN_INC_D)/*.h)
@@ -142,7 +143,7 @@ $(MAIN_OBJ_D)/%_S.o:	$(MAIN_SRC_D)/%.S
 $(MAIN_OBJ_D)/%_c.o:	$(MAIN_SRC_D)/%.c
 	$(CC) $(MAIN_CC_FLAGS) -I'$(MAIN_INC_D)' -c $< -o $@ 
 
-main: $(MAIN_C_OBJ) $(MAIN_S_OBJ) $(MAIN_INC) linker.ld $(MEMORY_BIN) $(PROC_BIN) $(PERIPHERALS_BIN) $(MISC_BIN)
+main: $(MAIN_C_OBJ) $(MAIN_S_OBJ) $(MAIN_INC) $(MAIN_LINK_FILE) $(MEMORY_BIN) $(PROC_BIN) $(PERIPHERALS_BIN) $(MISC_BIN)
 	$(LD) $(MAIN_C_OBJ) $(MAIN_S_OBJ) $(MAIN_LD_FLAGS) -o $(MAIN_BIN).elf
 	$(TOOLCHAIN_PREFIX)-objcopy $(MAIN_BIN).elf -O binary $(MAIN_BIN).img
 
