@@ -28,6 +28,7 @@
 /*
  *	IRQ pending (registers 1 and 2 and basic)
  *	Values from page 113 of ARM peripherals manual
+ *	and from page 16 of https://www.raspberrypi.org/documentation/hardware/raspberrypi/bcm2836/QA7_rev3.4.pdf
  */
 // Basic
 #define ARM_TIMER_IRQ		(1 << 0)
@@ -43,6 +44,9 @@
 #define AUX_IRQ				(1 << 29)
 // Register 2
 #define UART_IRQ			(1 << (57-32))	// Interrupt 57, inreg 2 so sub 32 to get shift
+// Core interrupts	(page 16 of https://www.raspberrypi.org/documentation/hardware/raspberrypi/bcm2836/QA7_rev3.4.pdf)
+#define LOCAL_TIMER_IRQ		(1<<11)
+
 
 #define IER_1_VALUE			( SYSTEM_TIMER_IRQ_1 | AUX_IRQ )
 #define IER_2_VALUE			( UART_IRQ )

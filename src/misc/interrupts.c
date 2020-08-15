@@ -2,6 +2,7 @@
 #include <sysregs.h>
 #include <addresses/irq.h>
 #include <misc/interrupts.h>
+#include <addresses/local_timer.h>
 #include <misc/printf.h>
 #include <peripherals/mmio.h>
 #include <peripherals/mini_uart.h>
@@ -35,7 +36,7 @@ char* const IRQ_NAMES[] = {
 void handle_irq_el1h(){
 	uint32_t irq;
 
-	printf("[D] Got an interrupt\n");
+	//printf("[D] Got an interrupt\n");
 
 	while( (irq = mmio_get32(IRQ_PENDING_1)) ){		// While there is an IRQ pending
 		switch(irq){								// Which IRQ is pending?
@@ -57,6 +58,16 @@ void handle_irq_el1h(){
 				break;
 			default:								// Else
 				printf("Unknown pending irq: %x\n", irq+32);	// The IRQ is unrecognised and ignored
+		}
+	}
+
+	while( (irq=mmio_get32(LOCAL_TIMER_CORE0_IRQ_REG)) ) {
+		switch(irq) {
+			case LOCAL_TIMER_IRQ:	
+				handle_local_timer();				// Handle BCM local timer
+				break;
+			default:
+				printf("Unknown pending irq (c): %x\n", irq);	// The IRQ is unrecognised and ignored
 		}
 	}
 

@@ -6,10 +6,15 @@
 #include <proc/tasks.h>
 #include <peripherals/timer.h>
 
-static const uint32_t SYSTEM_TIMER_INTERVAL = 200000;
+#include <misc/printf.h>
+
+static const uint32_t SYSTEM_TIMER_INTERVAL = 200000;	
+static const uint32_t ARM_TIMER_INTERVAL = 200000;
+static const uint32_t LOCAL_TIMER_INTERVAL = 2e5;		// 28-bit
+
 static uint32_t system_timer_value = 0;
 
-static const uint32_t ARM_TIMER_INTERVAL = 200000;
+// ========================= SYSTEM TIMER =========================================
 
 /*
  * Handle system timer interrupt request
@@ -31,6 +36,8 @@ void system_timer_init(){
 	mmio_put32(SYSTEM_TIMER_C1, system_timer_value);
 }
 
+
+// =========================== ARM TIMER ==========================================
 
 /*
  *	Handle arm timer interrupt
@@ -64,4 +71,40 @@ void arm_timer_irq_clear() {
  */
 uint8_t arm_timer_irq_status() {
 	return mmio_get32(ARM_TIMER_MASKIRQ_REG);
+}
+
+
+// =========================== LOCAL BCM TIMER ==================================
+
+/*
+ *	Initialise the local BCM timer
+ *	I am a little confused at this, there are a lot more registers and control options
+ *	I think this is the 64-bit timer but the reload value is only 28-bits
+ *	There's a difference between the 64-bit timer and the local timer.
+ *	Local timer seems to be core-independent but can route the interrupt to a certain
+ *	core, whereas the 64-bit timer runs up and is specific to a core?
+ */
+void local_timer_init() {
+	mmio_put32(LOCAL_TIMER_IRQ_ROUTE_REG, LOCAL_TIMER_ROUTE_VAL);	// Route the local timer IRQs to the right core
+
+	uint32_t ctrl_value = LOCAL_TIMER_CTRL_STATUS_VAL | (LOCAL_TIMER_INTERVAL&0x0FFFFFFF);
+	mmio_put32(LOCAL_TIMER_STATUS_REG, ctrl_value);					// Set local timer control and interval
+	mmio_put32(LOCAL_TIMER_CORE0_TIC_REG, LOCAL_TIMER_TIC_VAL);		// Set the timer interrupt control
+}
+
+/*
+ *	Called when the local timer interrupts
+ */
+void handle_local_timer() {
+	local_timer_clear_irq();
+	printf("[I] Local timer interrupt\n");
+	schedule_tick();
+}
+
+
+/*
+ *	Clear interrupts for the local timer
+ */
+void local_timer_clear_irq() {
+	mmio_put32(LOCAL_TIMER_CLR_REG, LOCAL_TIMER_INT_PENDING);
 }
