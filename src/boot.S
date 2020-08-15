@@ -59,8 +59,8 @@ el1_entry:						// Code to be run after processor enters exception level 1
 	msr		sctlr_el1, x0
 	ldr		x0, =CPACR_VALUE	// Load CPACR value into x0
 	msr		cpacr_el1, x0		// Set the CPACR value
-	adr		x0,	bss_begin		// Load bss_begin address
-	adr 	x1,	bss_end			// Load bss_end address
+	adr		x0,	__bss_start		// Load __bss_start address
+	adr 	x1,	__bss_end		// Load __bss_end address
 	sub		x1,	x1,	x0			// x1 = bss_size = bss_end - bss_start
 	bl		zero_memory			// Branch with link to zero out the memory
 	mov		sp,	#LOW_MEMORY		// Move stack pointer to the low memory location, 4M should be enough since kernel is tiny
