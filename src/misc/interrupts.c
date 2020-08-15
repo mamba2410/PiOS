@@ -34,7 +34,22 @@ char* const IRQ_NAMES[] = {
  */
 void handle_irq_el1h(){
 	uint32_t irq;
+
+	printf("[D] Got an interrupt\n");
 	
+	while( (irq=mmio_get32(IRQ_BASIC_PENDING)) ) {
+		switch(irq) {
+			case LOCAL_TIMER_IRQ:
+				handle_local_timer();
+				break;
+			case PENDING_IRQ1:
+			case PENDING_IRQ2:
+				break;
+			default:
+				printf("Unknown pending irq (b): %x\n", irq);
+		}
+	}
+
 	while( (irq = mmio_get32(IRQ_PENDING_1)) ){		// While there is an IRQ pending
 		switch(irq){								// Which IRQ is pending?
 			case SYSTEM_TIMER_IRQ_1:				// If its system timer 1...
@@ -49,7 +64,6 @@ void handle_irq_el1h(){
 	}	
 
 	while( (irq = mmio_get32(IRQ_PENDING_2)) ){
-		printf("");
 		switch(irq){
 			case UART_IRQ:
 				uart0_irq();						// Handle uart0 irq

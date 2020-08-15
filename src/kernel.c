@@ -20,6 +20,7 @@ void kernel_main(void){
 	printf(" Kernel started at EL%d\n", get_exception_level());
 	interrupt_vector_table_init();	// Initialise interrupt vector table
 	system_timer_init();			// Initialise system timer
+	local_timer_init();				// Initialise the local timer
 	enable_interrupt_controller();	// Enable interrupt controller
 	unmask_irq();					// Allow IRQs
 	printf(" Setup done\n");

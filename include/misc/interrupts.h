@@ -26,14 +26,22 @@
 #define X0_REGISTER_OFFSET	0x0
 
 /*
+ *	IRQ pending (registers 1 and 2 and basic)
  *	Values from page 113 of ARM peripherals manual
  */
+// Basic
+#define LOCAL_TIMER_IRQ		(1 << 0)
+#define MAILBOX_IRQ			(1 << 1)
+#define PENDING_IRQ1		(1 << 8)
+#define PENDING_IRQ2		(1 << 9)
+// Register 1
 #define EMPTY_IRQ			0x0
 #define SYSTEM_TIMER_IRQ_0	(1 << 0)
 #define SYSTEM_TIMER_IRQ_1	(1 << 1)
 #define SYSTEM_TIMER_IRQ_2	(1 << 2)
 #define SYSTEM_TIMER_IRQ_3	(1 << 3)
 #define AUX_IRQ				(1 << 29)
+// Register 2
 #define UART_IRQ			(1 << (57-32))	// Interrupt 57, inreg 2 so sub 32 to get shift
 
 #define IER_1_VALUE			( SYSTEM_TIMER_IRQ_1 | AUX_IRQ )
