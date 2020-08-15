@@ -37,19 +37,6 @@ void handle_irq_el1h(){
 
 	printf("[D] Got an interrupt\n");
 	
-	while( (irq=mmio_get32(IRQ_BASIC_PENDING)) ) {
-		switch(irq) {
-			case LOCAL_TIMER_IRQ:
-				handle_local_timer();
-				break;
-			case PENDING_IRQ1:
-			case PENDING_IRQ2:
-				break;
-			default:
-				printf("Unknown pending irq (b): %x\n", irq);
-		}
-	}
-
 	while( (irq = mmio_get32(IRQ_PENDING_1)) ){		// While there is an IRQ pending
 		switch(irq){								// Which IRQ is pending?
 			case SYSTEM_TIMER_IRQ_1:				// If its system timer 1...
@@ -70,6 +57,19 @@ void handle_irq_el1h(){
 				break;
 			default:								// Else
 				printf("Unknown pending irq: %x\n", irq+32);	// The IRQ is unrecognised and ignored
+		}
+	}
+
+	while( (irq=mmio_get32(IRQ_BASIC_PENDING)) ) {
+		switch(irq) {
+			case ARM_TIMER_IRQ:
+				handle_arm_timer();
+				break;
+			case PENDING_IRQ1:
+			case PENDING_IRQ2:
+				break;
+			default:
+				printf("Unknown pending irq (b): %x\n", irq);
 		}
 	}
 }

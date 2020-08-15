@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <addresses/arm_timer.h>
 #include <addresses/timer.h>
 #include <addresses/local_timer.h>
 #include <peripherals/mmio.h>
@@ -8,7 +9,7 @@
 static const uint32_t SYSTEM_TIMER_INTERVAL = 200000;
 static uint32_t current_timer_value = 0;
 
-static const uint32_t LOCAL_TIMER_INTERVAL = 200000;
+static const uint32_t ARM_TIMER_INTERVAL = 200000;
 
 /*
  * Handle system timer interrupt request
@@ -32,28 +33,28 @@ void system_timer_init(){
 
 
 /*
- *	Handle local timer interrupt
+ *	Handle arm timer interrupt
  *	Just call the schedule function
  */
-void handle_local_timer() {
-	local_timer_irq_clear();
+void handle_arm_timer() {
+	arm_timer_irq_clear();
 	schedule_tick();
 }
 
 /*
- *	Initialise the local timer
+ *	Initialise the ARM timer
  */
-void local_timer_init() {
-	mmio_put32(LOCAL_TIMER_CTRL_REG, LOCAL_TIMER_CTRL_VAL);
-	mmio_put32(LOCAL_TIMER_LOAD_REG, LOCAL_TIMER_INTERVAL);
+void arm_timer_init() {
+	mmio_put32(ARM_TIMER_CTRL_REG, ARM_TIMER_CTRL_VAL);
+	mmio_put32(ARM_TIMER_LOAD_REG, ARM_TIMER_INTERVAL);
 }
 
 
 /*
  *	Clear pending interrupt for the local timer
  */
-void local_timer_irq_clear() {
-	mmio_put32(LOCAL_TIMER_IRQCA_REG, 1);
+void arm_timer_irq_clear() {
+	mmio_put32(ARM_TIMER_IRQCA_REG, 1);
 }
 
 /*
@@ -61,6 +62,6 @@ void local_timer_irq_clear() {
  *	0 - Interrupt line not asserted
  *	1 - Interrupt line asserted
  */
-uint8_t local_timer_irq_status() {
-	return mmio_get32(LOCAL_TIMER_MASKIRQ_REG);
+uint8_t arm_timer_irq_status() {
+	return mmio_get32(ARM_TIMER_MASKIRQ_REG);
 }

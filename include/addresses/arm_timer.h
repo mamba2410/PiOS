@@ -1,0 +1,23 @@
+#ifndef ADDR_ARM_TIMER_H
+#define ADDR_ARM_TIMER_H
+
+#include <addresses/addr_base.h>
+
+/*
+ *	Page 196 of the BCM2835 ARM peripherals manual
+ */
+#define ARM_TIMER_BASE			(MMIO_BASE+0x0000B400)
+#define ARM_TIMER_LOAD_REG		(ARM_TIMER_BASE+0x00)
+#define ARM_TIMER_VAL_REG		(ARM_TIMER_BASE+0x04)
+#define ARM_TIMER_CTRL_REG		(ARM_TIMER_BASE+0x08)
+#define ARM_TIMER_IRQCA_REG		(ARM_TIMER_BASE+0x0C)
+#define ARM_TIMER_RAWIRQ_REG	(ARM_TIMER_BASE+0x10)
+#define ARM_TIMER_MASKIRQ_REG	(ARM_TIMER_BASE+0x14)
+#define ARM_TIMER_RELOAD_REG	(ARM_TIMER_BASE+0x18)
+#define ARM_TIMER_PDV_REG		(ARM_TIMER_BASE+0x1C)		// Pre-divider
+#define ARM_TIMER_FRC_REG		(ARM_TIMER_BASE+0x20)		// Free-running counter
+
+
+
+
+#endif /* ADDR_ARM_TIMER_H */

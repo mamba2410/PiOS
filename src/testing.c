@@ -5,21 +5,12 @@
 #include <proc/fork.h>
 #include <proc/tasks.h>
 
-#include <addresses/local_timer.h>
-
 void testing_main(){
 
 
 	int32_t result;
 	result = create_process(PF_KERNEL_THREAD, (uint64_t)(&kernel_process), 0, 0);
 	if( result < 0 ){ printf("Error whilst starting kernel process\n"); return; }
-
-	while(1) {
-		printf("[I] Local timer value: %x\n", mmio_get32(LOCAL_TIMER_VAL_REG));
-		printf("[I] Local timer interrupt status (mask; raw): %d;%d\n",
-				mmio_get32(LOCAL_TIMER_RAWIRQ_REG),
-				mmio_get32(LOCAL_TIMER_MASKIRQ_REG));
-	}
 
 	/*
 	printf("cpu_context offset: %x\n", &((task_t*)0)->cpu_context);

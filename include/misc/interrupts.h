@@ -30,7 +30,7 @@
  *	Values from page 113 of ARM peripherals manual
  */
 // Basic
-#define LOCAL_TIMER_IRQ		(1 << 0)
+#define ARM_TIMER_IRQ		(1 << 0)
 #define MAILBOX_IRQ			(1 << 1)
 #define PENDING_IRQ1		(1 << 8)
 #define PENDING_IRQ2		(1 << 9)
