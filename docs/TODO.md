@@ -3,9 +3,16 @@
 ## Bugfixes
 None that I'm aware of
 
-# Frontburner
-For now, exercises.
-Warm me up for virtual memory.
+## Frontburner
+- Rework linker script to be better
+	- Linker tokens `__SECTION_start` and `__SECTION_end` should exist for all sections
+	- Have a different one for vmem, pmem, etc.
+- Change directory structure.
+	- `Makefile` top level
+	- Rename `bin` to `build`
+	- Build should contain all things needed to build - except for `Makefile`. This includes metadata about the build process etc.
+	- Binary files should be in `build/target/`
+- Virtual memory
 
 ## Exercises
 - 04/2 - Allow task max lifetimes to change on init.
