@@ -8,10 +8,10 @@ The pi0 to pi2 will be more difficult since they are 32-bit so all of the assemb
 ## Resources
 - [osdev wiki](https://wiki.osdev.org/ARM_RaspberryPi_Tutorial_C)
 - [btzsrc/raspi3-tutorial](https://github.com/bztsrc/raspi3-tutorial)
-- [s-matyukevich/raspberry-pi-os)](https://github.com/s-matyukevich/raspberry-pi-os)
+- [s-matyukevich/raspberry-pi-os](https://github.com/s-matyukevich/raspberry-pi-os)
 - [jsandler github](https://jsandler18.github.io/)
-- [dwelch67/raspberrypi)](https://github.com/dwelch67/raspberrypi)
-
+- [dwelch67/raspberrypi](https://github.com/dwelch67/raspberrypi)
+- [AArch64 Reference Manual](https://developer.arm.com/documentation/ddi0487/latest)
 - [BCM2837 ARM Peripherals Manual](https://github.com/raspberrypi/documentation/files/1888662/BCM2837-ARM-Peripherals.-.Revised.-.V2-1.pdf)
 - [BCM2711 ARM Peripherals Manual](https://www.raspberrypi.org/documentation/hardware/raspberrypi/bcm2711/rpi_DATA_2711_1p0.pdf)
 - [ARMv8-A Instruction Set Architecture](https://developer.arm.com/architectures/learn-the-architecture/armv8-a-instruction-set-architecture)

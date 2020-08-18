@@ -1,5 +1,7 @@
+#include <addresses/vmem.h>
 #include <memory/mem.h>
 #include <sysregs.h>
+#include <mmu.h>
 
 .section ".text.boot"			// Put all of this in .text.boot
 
@@ -7,7 +9,6 @@
  * All processor cores run this code, so need to handle it differently for each one
  * otherwise the code will be run 4 times and the serial registers might mess up
  */
-//.org	0x80000					// This code is running at 0x80000 (or 0x00000 if kernel_old is enabled in config.txt)
 .global 	_start
 _start:
 	mrs		x0, mpidr_el1		// Move processor id from system register to gp register
@@ -15,6 +16,7 @@ _start:
 	cbz		x0, 1f				// Are we ID zero? if so go 1 forward	
 
 processor_hang:					// If not, infi-loop
+	wfe							//
 	b processor_hang			//
 
 1:
@@ -55,19 +57,32 @@ el2_entry:
 	eret						// Change exception level and branch to location in elr_el2
 
 el1_entry:						// Code to be run after processor enters exception level 1
-	ldr		x0, =SCTLR_VALUE_MMU_DISABLED
-	msr		sctlr_el1, x0
+	ldr		x0, =SCTLR_VALUE_MMU_DISABLED	//
+	msr		sctlr_el1, x0		// Set the SCTLR value, with MMU off
 	ldr		x0, =CPACR_VALUE	// Load CPACR value into x0
 	msr		cpacr_el1, x0		// Set the CPACR value
 	adr		x0,	__bss_start		// Load __bss_start address
 	adr 	x1,	__bss_end		// Load __bss_end address
 	sub		x1,	x1,	x0			// x1 = bss_size = bss_end - bss_start
 	bl		zero_memory			// Branch with link to zero out the memory
-	mov		sp,	#LOW_MEMORY		// Move stack pointer to the low memory location, 4M should be enough since kernel is tiny
-	bl		kernel_main			// Branch to kernel_main, defined in a c file
+	bl 		_create_kernel_tables	// Create kernel virtual address tables
+	mov		x0, #VA_START		// Load virtual address start value
+	add		sp, x0, #LOW_MEMORY	// Set the stack pointer to use a virtual address
+	adrp	x0, __k_pages_start	// Load address of kernel tables
+	msr		ttbr1_el1, x0		// Store address in translation table 1 (kernel table)
+	ldr		x0, =TCR_VALUE		//
+	msr		tcr_el1, x0			// Set the translation control register for vmem
+	ldr		x0, =MAIR_VALUE		//
+	msr		mair_el1, x0		// Set the mair register
 
-	b 		processor_hang		// If we return from kernel_main, hang the processor
+	ldr		x2,	=kernel_main	// Load address of kernel_main
+	mov		x0, #SCTLR_MMU_ENABLED
+	msr		sctlr_el1, x0					// Set the value, turning on the mmu
+	br		x2								// Jump to kernel_main
 
+
+
+.section ".text"
 
 .global	get_exception_level
 get_exception_level:			// Global function to get exception level

@@ -22,9 +22,10 @@
 #define SCTLR_MMU_ENABLED           (1 << 0)
 
 #define SCTLR_VALUE_MMU_DISABLED	(SCTLR_RESERVED | SCTLR_EE_LITTLE_ENDIAN | SCTLR_I_CACHE_DISABLED | SCTLR_D_CACHE_DISABLED | SCTLR_MMU_DISABLED)
+#define SCTLR_VALUE_MMU_ENABLED	(SCTLR_MMU_ENABLED)
 
 /*
- * CPACR_EL1
+ * CPACR_EL1, Architectural Feature Access Control Register (EL1), AArch64 Reference Manual page 2938
  */
 #define CPACR_TRAP_ALL				(0<<20)
 #define CPACR_TRAP_EL0				(1<<20)
