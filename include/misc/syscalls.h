@@ -5,18 +5,22 @@
 #define	SYSCALL_CLONE	0x1
 #define	SYSCALL_MALLOC	0x2
 #define	SYSCALL_EXIT	0x3
-#define SYSCALL_TOTAL	0x4
+#define SYSCALL_FORK	0x4
+#define SYSCALL_TOTAL	0x5
 
 #ifndef __ASSEMBLER__
 #include <stdint.h>
 
 void	 sys_write(char*);
 uint8_t	 sys_clone(uint64_t);
+int32_t	 sys_fork();
 uint64_t sys_malloc();
 void	 sys_exit();
+void	 user_delay(uint64_t);
 
 extern void	 	call_sys_write(char*);
 extern uint8_t	call_sys_clone(uint64_t func, uint64_t arg, uint64_t sp);
+extern int32_t	call_sys_fork();
 extern uint64_t call_sys_malloc();
 extern void	 	call_sys_exit();
 

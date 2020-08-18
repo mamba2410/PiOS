@@ -72,6 +72,7 @@ void schedule(){
 
 	}
 	
+	printf("[D] Switching to task: pid: %d (0x%08x)\n", next_task, tasks[next_task]);
 	switch_task(tasks[next_task]);	// Switch to the found task
 	preempt_enable();				// Enable preemption for the new task
 }
@@ -87,6 +88,7 @@ void switch_task(task_t *task){
 	task_t *prev = current_task;			// Keep track of the old task
 	current_task = task;					// Current task is now the new task
 
+	set_pgd(task->mm.pgd);					// Set the PGD for the new task
 	cpu_switch_task(prev, task);	// Do the switch
 }
 

@@ -3,8 +3,9 @@
 
 #include <addresses/addr_base.h>
 
-#define PAGE_SHIFT		12			// Each page is 1<<12 (4K) bytes
-#define TABLE_SHIFT		9			// Each table holds 1<<9 (512) descriptors
+#define PAGE_MASK		0xFFFFFFFFF000		// We only vare about these bits of a page descriptor
+#define PAGE_SHIFT		12					// Each page is 1<<12 (4K) bytes
+#define TABLE_SHIFT		9					// Each table holds 1<<9 (512) descriptors
 #define SECTION_SHIFT 	(PAGE_SHIFT + TABLE_SHIFT)	// Each section is 1<<(12+9) (2M) bytes
 
 #define PGD_SHIFT		(PAGE_SHIFT + 3*TABLE_SHIFT)
@@ -31,10 +32,16 @@
 #ifndef __ASSEMBLER__
 
 #include <stdint.h>
+#include <proc/tasks.h>
+
 
 uint64_t	get_page();
 void		free_page(uint64_t);
-void		zero_memory(uint64_t src, uint64_t n);
+uint64_t	allocate_kernel_page();
+uint64_t	allocate_user_page(task_t*, uint64_t);
+
+extern void	zero_memory(uint64_t src, uint64_t size);
+extern void	memcpy(uint64_t src, uint64_t dst, uint64_t size);
 
 #endif /* __ASSEMBLER__ */
 

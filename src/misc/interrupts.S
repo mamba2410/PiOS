@@ -161,6 +161,8 @@ snc_valid_el0_64:			// Synchronous interrupt at EL0 64-bit
 
 	cmp		x24, #ESR_ELx_EC_SVC64				// Are we handling an SVC 64-bit interrupt?
 	b.eq	el0_64_svc							// If we are, branch to handle that
+	cmp		x24, #ESR_ELx_EC_DA_LOW				// Are qwe handling a data abort?
+	b.eq	el0_64_da							// If so, brahcn to it
 
 	cmp		x24, #ESR_ELx_EC_UNKNOWN			// Are we handling an unknown/misc exception?
 	b.eq	snc_valid_el0_64_unknown			// ...if we are, branch to asm function to handle
@@ -187,6 +189,19 @@ el0_64_svc:
 	ldr		x16, [x27, x26, lsl #3]	// Get address of sys_* function
 	blr		x16						// Cal the sys_* function
 	b ret_from_syscall
+
+el0_64_da:
+	bl		unmask_irq				// Allow interrupts
+	mrs		x0, far_el1				// Get the fault address register
+	mrs		x1, esr_el1				// Get the exception syndrome register
+	bl		_mem_abort				// Branch to a C function for the heavy lifting
+	cmp		x0, #0					// Was everything ok?
+	b.eq	1f						// If so, continue
+	handle_invalid_entry 0, DA_ERROR_EL0_64	// If not, yell about it
+1:
+	bl		mask_irq				// Disable interrupts
+	populate_registers 0			// Return from the interrupt
+	eret							//
 
 invalid_syscall:
 	handle_invalid_entry 0, SYSCALL_ERROR_EL0_64	// Handle invalid exception

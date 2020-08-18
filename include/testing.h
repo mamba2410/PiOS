@@ -5,12 +5,13 @@
 
 void testing_main();
 
-void example_process(char*);
-void user_process();
 void kernel_process();
 
 extern uint64_t get_exception_level();
 extern uint32_t number_tasks;
+
+extern uint64_t __user_start;
+extern uint64_t __user_end;
 
 extern uint64_t get_q0();
 extern uint64_t get_q2();

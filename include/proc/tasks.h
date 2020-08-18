@@ -51,6 +51,34 @@ typedef struct {
 	uint32_t fpcr;
 } fpsimd_context_t;
 
+
+/*
+ * Structure to keep track of pages for a user task
+ * Holds both the virtual address, as used by the task
+ * as well as the physical address
+ */
+typedef struct {
+	uint64_t phys_addr;
+	uint64_t virt_addr;
+} user_page_t;
+
+/*
+ * Maximum number of pages a task can have
+ */
+#define MAX_PROCESS_PAGES	16
+
+/*
+ * Struct to keep track of memory for a task
+ * Keeps track of the PGD and any pages it has allocated for it
+ */
+typedef struct {
+	uint64_t	pgd;
+	uint16_t	user_pages_count;
+	user_page_t	user_pages[ MAX_PROCESS_PAGES ];
+	uint16_t	kernel_pages_count;
+	uint64_t	kernel_pages[ MAX_PROCESS_PAGES ];
+} mm_t;
+
 /*
  * Struct for a task
  * Stores the cpu context for the task, 
@@ -60,25 +88,28 @@ typedef struct {
  * the priority of the task, a measure of how long the task can last
  */
 typedef struct {
-	cpu_context_t cpu_context;			// 0x
-	fpsimd_context_t fpsimd_context;
-	int64_t  state;
-	int64_t  lifetime;
-	int64_t  can_preempt;
-	int64_t  priority;
-	uint64_t stack;
-	uint64_t flags;
+	cpu_context_t		cpu_context;
+	fpsimd_context_t	fpsimd_context;
+	int64_t		state;
+	int64_t		lifetime;
+	int64_t		can_preempt;
+	int64_t		priority;
+	uint64_t	stack;
+	uint64_t	flags;
+	mm_t		mm;
 } task_t;
 
 // Init task definition
 #define INIT_CPU_CONTEXT_STRUCT {.x19=0, .x20=0, .x21=0, .x22=0, .x23=0, .x24=0, .x25=0, .x26=0, .x27=0, .x28=0, .fp=0, .pc=0, .sp=0}
+#define INIT_MM_STRUCT { 0, 0, {{0}}, 0, {0}}
 #define INIT_TASK_STRUCT {	.cpu_context	= INIT_CPU_CONTEXT_STRUCT,\
 							.state			= TASK_STATE_RUNNING,\
 							.lifetime		= 0,\
 							.can_preempt	= 1,\
 							.priority		= 1,\
 							.stack			= 0,\
-							.flags			= PF_KERNEL_THREAD}
+							.flags			= PF_KERNEL_THREAD,\
+							.mm				= INIT_MM_STRUCT}
 
 
 // Task states

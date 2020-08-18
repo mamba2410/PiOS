@@ -17,9 +17,20 @@ void sys_write(char* buf){
 /*
  * Clones a process given a stack pointer for the new process
  * Will be in user mode
+ * NOTE: Does not work for now in virtual memory, function pointers will be off
  */
 uint8_t sys_clone(uint64_t stack){
-	return create_process(0, 0, 0, stack);
+	//return create_process(0, 0, 0, stack);
+	return 0xFF;
+}
+
+/*
+ * Forks a process, both tasks will be exactly the same, with
+ * separate virtual memory and PIDs
+ */
+int32_t sys_fork() {
+	//printf("[D] Forking at EL %d\n", get_exception_level());
+	return create_process(0, 0, 0);
 }
 
 
@@ -40,4 +51,4 @@ void sys_exit(){
 	exit_process();
 }
 
-void* const syscall_table[] = {sys_write, sys_clone, sys_malloc, sys_exit};
+void* const syscall_table[] = {sys_write, sys_clone, sys_malloc, sys_exit, sys_fork};

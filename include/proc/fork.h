@@ -33,9 +33,9 @@ typedef struct {
 /*
  * Function definitions
  */
-int32_t create_process(uint64_t clone_flags, uint64_t func_pointer, uint64_t arg, uint64_t stack);
+int32_t create_process(uint64_t clone_flags, uint64_t func_pointer, uint64_t arg);
 extern void ret_from_fork();
-int8_t  move_to_user(uint64_t);
+int8_t  move_to_user(uint64_t, uint64_t, uint64_t);
 pt_regs_t *task_pt_regs(task_t*);
 
 

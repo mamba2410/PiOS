@@ -27,7 +27,8 @@ char* const IRQ_NAMES[] = {
 	"Fast Interrupt Request EL0_64",
 	"System Error EL0_64",
 	"Synchronous Exception EL0_64 ERROR",
-	"System Call EL0_64 ERROR"
+	"System Call EL0_64 ERROR",
+	"Data Abort EL0_64, invalid memory"
 };
 
 /*
@@ -53,23 +54,23 @@ void handle_irq_el1h(){
 		}
 	}
 
-	// Core-specific )RQs, core 0
-	while( (irq=mmio_get32(LOCAL_TIMER_CORE0_IRQ_REG)) ) {
-		switch(irq) {
-			case LOCAL_TIMER_IRQ: handle_local_timer(); break;
-			default: printf("[E] Unknown pending irq (c): %x\n", irq);	// The IRQ is unrecognised and ignored
-		}
-	}
+	// Core-specific IRQs, core 0
+	//while( (irq=mmio_get32(LOCAL_TIMER_CORE0_IRQ_REG)) ) {
+	//	switch(irq) {
+	//		case LOCAL_TIMER_IRQ: handle_local_timer(); break;
+	//		default: printf("[E] Unknown pending irq (c): %x\n", irq);	// The IRQ is unrecognised and ignored
+	//	}
+	//}
 
 	// Baisc peripheral IRQs
-	while( (irq=mmio_get32(IRQ_BASIC_PENDING)) ) {
-		switch(irq) {
-			case LOCAL_TIMER_IRQ: handle_local_timer(); break;
-			case PENDING_IRQ1:
-			case PENDING_IRQ2: break;
-			default: printf("[E] Unknown pending irq (b): %x\n", irq);
-		}
-	}
+	//while( (irq=mmio_get32(IRQ_BASIC_PENDING)) ) {
+	//	switch(irq) {
+	//		case LOCAL_TIMER_IRQ: handle_arm_timer(); break;
+	//		case PENDING_IRQ1:
+	//		case PENDING_IRQ2: break;
+	//		default: printf("[E] Unknown pending irq (b): %x\n", irq);
+	//	}
+	//}
 }
 
 /*

@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <memory/mem.h>
+#include <memory/vmem.h>
 #include <proc/fork.h>
 #include <proc/tasks.h>
 
@@ -7,16 +8,14 @@
  * Prepares a new task and adds it to the processes array
  * Does not perform a context switch, only makes a task
  */
-int32_t create_process(uint64_t clone_flags, uint64_t func, uint64_t arg, uint64_t sp){
+int32_t create_process(uint64_t clone_flags, uint64_t func, uint64_t arg){
 	preempt_disable();		// Cannot switch tasks whilst making a new task
 
 	task_t *page;
-	page = (task_t*)get_page();			// Get a page for the new process
+	page = (task_t*)allocate_kernel_page();			// Get a page for the new process
 	if( !page ) return 1;				// If no page was found
 
-	pt_regs_t *child_regs = task_pt_regs(page);						// Get pointer to saved task registers 
-	zero_memory((uint64_t)child_regs, sizeof(pt_regs_t));				// Zero out the registers
-	zero_memory((uint64_t)&(page->cpu_context), sizeof(cpu_context_t));// Zero out the cpu context
+	pt_regs_t *child_regs = task_pt_regs(page);								// Get pointer to saved task registers 
 
 	if( clone_flags & PF_KERNEL_THREAD ){							// If we are a kernel thread
 		page->cpu_context.x19 = func;								// Load registers with function
@@ -25,9 +24,10 @@ int32_t create_process(uint64_t clone_flags, uint64_t func, uint64_t arg, uint64
 		pt_regs_t *current_regs = task_pt_regs(current_task);		// Get the current task registers
 		*child_regs = *current_regs;								// Copy them to the child
 		child_regs->regs[0] = 0;									// Set x0 to zero (so we know it's the child)
-		child_regs->sp = sp + PAGE_SIZE;							// Save child stack top as sp
-		page->stack = sp;											// Save child stack bottom
+		copy_virt_memory(page);										// Copy the task's virtual memory
 	}
+
+	printf("[D] Child page: %08x\n[D] Parent page: %08x\n", page, current_task);
 
 	page->flags = clone_flags;					// Copy over clone flags
 	page->priority = current_task->priority;	// Set priority, lifetime etc
@@ -48,16 +48,17 @@ int32_t create_process(uint64_t clone_flags, uint64_t func, uint64_t arg, uint64
 
 /*
  * Move a task to user mode in EL0
+ * Given the 
  */
-int8_t move_to_user(uint64_t pc){
+int8_t move_to_user(uint64_t start, uint64_t size, uint64_t pc){
 	pt_regs_t *r = task_pt_regs(current_task);	// Get processor registers of current task
-	zero_memory((uint64_t)r, sizeof(*r));			// Zero them out
 	r->pc = pc;									// Set pc to function argument
 	r->pstate = PSR_MODE_EL0t;					// Set program state to EL0t
-	uint64_t sp = get_page();					// Get a new memory page
-	if(!sp) return -1;							// If failed, return -1
-	r->sp = sp + PAGE_SIZE;						// If not, set current task sp register to top of page
-	current_task->stack = sp;					// Set task_t stack pointer to bottom of page
+	r->sp = 2 * PAGE_SIZE;						// If not, set current task sp register to top of page
+	uint64_t code_page = allocate_user_page(current_task, 0);
+	if(!code_page) return -1;
+	memcpy(code_page, start, size);
+	set_pgd(current_task->mm.pgd);
 	return 0;									// Return OK
 }
 

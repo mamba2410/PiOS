@@ -1,5 +1,7 @@
 #include <misc/syscalls.h>
 
+//.section ".text.user"
+
 /*
  * Wrapper function for the write syscall	
  */
@@ -37,6 +39,15 @@ thread_start:
 
 
 /*
+ * Wrapper function for the fork syscall
+ */
+.global call_sys_fork
+call_sys_fork:
+	mov		x8, #SYSCALL_FORK
+	svc		#0
+	ret
+
+/*
  * Wrapper function fot the malloc syscall
  */
 .global call_sys_malloc
@@ -49,8 +60,17 @@ call_sys_malloc:
 /*
  * Wrapper function for the exit syscall
  */
- .global call_sys_exit
- call_sys_exit:
+.global call_sys_exit
+call_sys_exit:
  	mov		w8,	#SYSCALL_EXIT	// Load register with exit syscall ID
 	svc		#0					// Generate synchronous exception
 	ret							// Return to sender
+
+/*
+ * Function for user code to delay
+ */
+.global user_delay
+user_delay:
+	subs	x0, x0, #1
+	bne		user_delay
+	ret
