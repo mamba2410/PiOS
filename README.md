@@ -40,10 +40,13 @@ Connect up a USB-to-TTL cable to the pc and raspi.
 Make sure to connect GND (black), TXD (white) and RXD (green) and NOT power (red).
 
 ```
-
+   3v3 ---> x x <--- 5V
+GPIO 2 ---> x x <--- 5V
+GPIO 3 ---> x x <--- GND (black wire)
+GPIO 4 ---> x x <--- TXD (white wire)
+   GND ---> x x <--- RXD (green wire)
+~~~~~~~~~~~ === ~~~~~~~~~~~~
 ```
-
-On the pi 3B the pins should all be next to each other, 3 in a row.
 
 Connect both ends of the USB-to-TTl cable whilst the pi is off.
 ```
