@@ -25,16 +25,10 @@ Test this with either qemu or actual hardware.
 
 ### QEMU
 For the `pi3` branch, use
-
 ```
-$ qemu-system-aarch64 -M raspi3 -kernel bin/kernel8.img -display none -serial null -serial stdio
+$ ./qemu [mi]
 ```
-This emulates a Raspberry Pi 3 SoC with the specified kernel.
-Note: There are no timer interrupts in this emulator, so timed scheduling won't work.
-
-The first `-serial` flag is for the default `UART0` port, the second is for the auxiliary `UART1` or mini uart port.
-Both cannot be on `stdio`.
-
+No option is PL011 UART, `m` option uses mini-uart, `i` option opens qemu info console.
 There will be no display, there are currently no plans to add video display to this kernel. 
 It would be a long ways off.
 
@@ -45,6 +39,10 @@ The system timer interrupts do not work for instance.
 Connect up a USB-to-TTL cable to the pc and raspi.
 Make sure to connect GND (black), TXD (white) and RXD (green) and NOT power (red).
 
+```
+
+```
+
 On the pi 3B the pins should all be next to each other, 3 in a row.
 
 Connect both ends of the USB-to-TTl cable whilst the pi is off.
@@ -54,11 +52,8 @@ $ screen /dev/ttyUSB0 115200
 Exchange it for the serial port and baud rate as needed.
 Once screen is up, power on the pi and go for it, you should see serial output.
 
-Make sure the user is in the `dialout` group, you may need to restart to take effect.
-You might also need to kill `screen` with
-```
-$ killall screen
-```
-
-Tip: exit `screen` with `C-a + \`.
+Screen tips:
+- Make sure the user is in the `dialout` group, you may need to restart to take effect.
+- Exit `screen` with `C-a + \ + y`
+- Clear output with `C-a + Shift-C`
 

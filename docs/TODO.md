@@ -1,14 +1,21 @@
 # TODO
 
 ## Bugfixes
-None that I'm aware of
+None that I'm aware of.
+There are likely loads with virtual memory.
 
 ## Frontburner
-- Virtual memory
+- Map local timer register memory.
+	- Register starts at `0x40000000` (1GB) which is also the high memory limit.
+	- Do more research on the actual memory maps.
+- Tasks store their pid in the struct.
+- User level printf access.
+- User level scheduling.
 
 ## Exercises
 - 04/2 - Allow task max lifetimes to change on init.
 - 04/4 - Allow unlimited number of tasks.
+- 06/1 - [QEMU virtual memory](https://github.com/s-matyukevich/raspberry-pi-os/blob/master/docs/lesson06/exercises.md)
 
 
 ## Tests
