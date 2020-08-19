@@ -27,8 +27,6 @@ int32_t create_process(uint64_t clone_flags, uint64_t func, uint64_t arg){
 		copy_virt_memory(page);										// Copy the task's virtual memory
 	}
 
-	printf("[D] Child page: %08x\n[D] Parent page: %08x\n", page, current_task);
-
 	page->flags = clone_flags;					// Copy over clone flags
 	page->priority = current_task->priority;	// Set priority, lifetime etc
 	page->state = TASK_STATE_RUNNING;			//

@@ -15,7 +15,6 @@ void map_page(task_t *task, uint64_t va, uint64_t page) {
 	if(!task->mm.pgd) {					// Do we already have a PGD for this task?
 		task->mm.pgd = get_page();		// If not, make one and keep track of the page
 		task->mm.kernel_pages[++task->mm.kernel_pages_count] = task->mm.pgd;
-		printf("[D] Making new PGD(%08x)\n", task->mm.pgd);
 	}
 
 
@@ -35,7 +34,6 @@ void map_page(task_t *task, uint64_t va, uint64_t page) {
 
 	map_table_entry( (uint64_t*)(table+VA_START), va, page );	// Actually put the page descriptor in
 	user_page_t p = {.phys_addr=page, .virt_addr=va};									// Add this page to the task struct
-	printf("[D] Mapping page %08x->%08x\n", page, va);
 	task->mm.user_pages[task->mm.user_pages_count++] = p;
 }
 

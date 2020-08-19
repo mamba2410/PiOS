@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <memory/mem.h>
+#include <memory/vmem.h>
 #include <proc/irq_ctl.h>
 #include <proc/tasks.h>
 
@@ -72,7 +73,6 @@ void schedule(){
 
 	}
 	
-	printf("[D] Switching to task: pid: %d (0x%08x)\n", next_task, tasks[next_task]);
 	switch_task(tasks[next_task]);	// Switch to the found task
 	preempt_enable();				// Enable preemption for the new task
 }

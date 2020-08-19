@@ -10,8 +10,6 @@ void testing_main(){
 	int32_t result;
 	result = create_process(PF_KERNEL_THREAD, (uint64_t)(&kernel_process), 0);
 	if( result < 0 ){ printf("[E] Error whilst starting kernel process\n"); return; }
-
-	printf("[T] Testing main done, scheduling");
 }
 
 void kernel_process(){
