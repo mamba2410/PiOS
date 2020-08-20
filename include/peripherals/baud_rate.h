@@ -8,7 +8,7 @@
 
 // Clock frequencies
 #define SYS_CLOCK_FREQ		250e6		// System clock is 250MHz
-#define UART0_CLOCK			3e6			// UART0 clock is 3MHz
+#define UART0_CLOCK_RATE	3e6			// UART0 clock is 3MHz
 
 
 // Mini uart values
@@ -16,7 +16,7 @@
 
 
 // PL011 UART0 values
-#define BAUD_RATE_DIVIDER	( (double)UART0_CLOCK/(16.0 * BAUD_RATE) )
+#define BAUD_RATE_DIVIDER	( (double)UART0_CLOCK_RATE/(16.0 * BAUD_RATE) )
 #define BAUD_RATE_FRACTION	( (BAUD_RATE_DIVIDER-IBRD_VALUE)*64.0 + 0.5 )
 
 #define IBRD_VALUE			(uint32_t)(BAUD_RATE_DIVIDER)

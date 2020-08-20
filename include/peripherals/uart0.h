@@ -25,6 +25,11 @@
 #define UART0_FR_TXFE		(1<<7)					// Set when TX FIFO empty
 
 /*
+ *	Data about the UART0 device
+ */
+#define UART0_CLOCK_ID		0x00000002		// ID of the UART0 clock for mailbox calls
+
+/*
  *	Note on IMSC: Setting the mask bit as high ENABLES the interrupt
  */
 

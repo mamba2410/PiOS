@@ -12,21 +12,18 @@
 void uart0_init(){
 	uint32_t selector;
 	uint32_t bitmask;
+	mailbox_t mbox;
 
 	mmio_put32(UART0_CR, 0);			// Disable uart0
 
 	// Set clock rate
-	mailbox[0] = 9*4;					// Size of mailbox
-	mailbox[1] = MBOX_REQUEST;			// We are requesting something
-	mailbox[2] = MBOX_TAG_SETCLK;		// Tag to set a clock rate
-	mailbox[3] = 12;
-	mailbox[4] = 8;
-	mailbox[5] = 2;						// Specify the UART0 clock
-	mailbox[6] = UART0_CLOCK;			// Set the clock rate
-	mailbox[7] = 0;						// Clear turbo (? not sure what this is)
-	mailbox[8] = MBOX_TAG_LAST;			// End the mailbox
-	mailbox_call(MBOX_CH_PROP);			// Send the mail
-
+	mbox.tag_id			= MBOX_TAG_SETCLKR;		// Tag to set clock rate
+	mbox.value_size		= 12;					// Value payload is 12 bytes
+	mbox.tag_rr			= MBOX_TAG_REQUEST;		// We are requesting
+	mbox.value_u32[0]	= UART0_CLOCK_ID;		// Specify the UART clock
+	mbox.value_u32[1]	= UART0_CLOCK_RATE;		// Specify the clock rate
+	mbox.value_u32[2]	= 0;					// No turbo
+	mailbox_send(&mbox, MBOX_CH_PROP);			// Send this mailbox
 
 	// Setup pins
 	selector = mmio_get32(GPFSEL1);		// Grab GPIO selector

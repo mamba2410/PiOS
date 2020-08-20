@@ -1,8 +1,9 @@
 #include <addresses/mailbox.h>
+#include <memory/mem.h>
 #include <peripherals/mailbox.h>
 #include <peripherals/mmio.h>
 
-volatile uint32_t __attribute__((aligned(16))) mailbox[36];
+static volatile uint32_t __attribute__((aligned(16))) mailbox[MAILBOX_MAX_SIZE];
 
 /*
  * Mailboxes are messages sent to the GPU from the CPU, done via MMIO
@@ -27,6 +28,8 @@ volatile uint32_t __attribute__((aligned(16))) mailbox[36];
  * they may need padding to get them to 4 byte alignment
  */
 
+uint64_t get_mbox_addr() {return (uint64_t)&mailbox;}
+
 /*
  * Call the mailbox on a given channel
  * Returns 0 on success, 1 on failure
@@ -44,3 +47,27 @@ uint8_t mailbox_call(uint8_t c){
 
 	return 1;
 }
+
+/*
+ *	Given mailbox_t object, convert it into raw bytes and send it to the channel
+ *	total size, request and last tag are automatically set
+ */
+uint8_t mailbox_send(mailbox_t *mbox, uint8_t channel) {
+	mbox->buffer_size = mbox->value_size + MAILBOX_HEADER_SIZE + MAILBOX_TAG_HEADER_SIZE + MAILBOX_FOOTER_SIZE;
+	uint32_t tmp = mbox->buffer_size % 16;
+	if(tmp) mbox->buffer_size += 16-tmp;
+	mbox->rr = MBOX_REQUEST;												// This is a request
+	mbox->value_bytes[mbox->value_size+0] = (MBOX_TAG_LAST>>12)&0xFF;		// Set the last tag to the 
+	mbox->value_bytes[mbox->value_size+1] = (MBOX_TAG_LAST>>8)&0xFF;		// right value. End of buffer
+	mbox->value_bytes[mbox->value_size+2] = (MBOX_TAG_LAST>>4)&0xFF;		// may not be 4-byte aligned so
+	mbox->value_bytes[mbox->value_size+3] = (MBOX_TAG_LAST>>0)&0xFF;		// that's why I have to do this
+	mbox->tag_last = MBOX_TAG_LAST;											// Set the last tag just in case
+	memcpy((uint64_t)&mailbox, (uint64_t)mbox, mbox->buffer_size);			// Copy the memory over
+	return mailbox_call(channel);											// Do the actual call
+}
+
+uint8_t mailbox_get(mailbox_t *mbox) {
+	memcpy((uint64_t)mbox, (uint64_t)&mailbox, mailbox[0]);
+	return 0;
+}
+
