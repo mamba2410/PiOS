@@ -53,6 +53,14 @@ void testing_main(){
 	mailbox_get(&mbox);
 	printf("[T] Serial number: %08x%08x\n", mbox.value_u32[1], mbox.value_u32[0]);
 
+	printf("[T] Testing timer... ");
+	for(uint8_t i = 0; i < 10; i++) {
+		printf("%d ", i);
+		delay_millis(1000);
+
+	}
+	printf("\n");
+
 
 	result = create_process(PF_KERNEL_THREAD, (uint64_t)(&kernel_process), 0);
 	if( result < 0 ){ printf("[E] Error whilst starting kernel process\n"); return; }
