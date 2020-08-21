@@ -30,7 +30,6 @@ There are likely loads with virtual memory.
 ## Features/Research
 - User processes
 	- `fork` `kfork` `clone` `kclone` etc
-- Rewrite mailbox code to be better
 - Random numbers
 	- Pseudo-random
 	- Hardware backed?	
@@ -43,7 +42,6 @@ There are likely loads with virtual memory.
 	- Maybe get an echo loop, if input `r` and `h` in serial, reset and halt
 - Change schedule function at compilation
 	- Configs like `SCHEDULER_CFS` and `SCHEDULER_RR` etc
-- Mailboxes, how they work, how to interact etc
 - Different scheduler types
 	- Round robin
 	- Completely Fair Scheduler (CFS)
