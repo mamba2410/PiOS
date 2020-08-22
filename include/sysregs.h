@@ -66,7 +66,8 @@
 #define ESR_ELx_EC_SVC64			0x15		// Supervisor call when in aarch64 state
 #define ESR_ELx_EC_SVE				0x07		// Access to A-SIMD if trapped by CPACR_EL1
 #define ESR_ELx_EC_MSR				0x18		// Trapped msr, mrs or system instruction execution
-#define ESR_ELx_EC_DA_LOW			0x24		// Data abort
+#define ESR_ELx_EC_DA_LOW			0x24		// Data abort to lower exception level
+#define ESR_ELx_EC_DA_HIGH			0x25		// Data abort to same exception level
 #define ESR_ELx_EC_SErr				0x2f		// SError interrupt
 #define ESR_ELx_EC_BEL				0x30		// Breakpoint exception from lower EL
 #define ESR_ELx_EC_BES				0x31		// Breakpoint exception from same EL

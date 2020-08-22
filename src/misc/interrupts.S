@@ -107,7 +107,7 @@ vector_table:
 	vector_table_entry	fiq_invalid_el1t		// Fast interrupt at el1t, invalid
 	vector_table_entry	err_invalid_el1t		// Error interrupt at el1t, invalid (for now)
 
-	vector_table_entry	snc_invalid_el1h		// Synchronous interrupt at el1h, invalid (for now)
+	vector_table_entry	snc_valid_el1h			// Synchronous interrupt at el1h, valid
 	vector_table_entry	irq_valid_el1h			// Normal interrupt at el1h, valid, will handle it
 	vector_table_entry	fiq_invalid_el1h		// Fast interrupt at el1h, invalid
 	vector_table_entry	err_invalid_el1h		// Error interrupt at el1h, invalid (for now)
@@ -146,6 +146,14 @@ irq_valid_el1h:				// Normal interrupt at EL1h
 	populate_registers 1	// Repopulate the registers at EL1
 	eret					// Exception return
 
+snc_valid_el1h:
+	save_registers 1
+	mrs		x25, esr_el1
+	lsr		x24, x25, #ESR_ELx_EC_SHIFT
+	cmp		x24, #ESR_ELx_EC_DA_HIGH
+	b.eq	el1h_da
+	handle_invalid_entry 0, SNC_ERROR_EL1h
+
 irq_valid_el0_64:			// Normal interrupt at EL0 64-bit
 	save_registers 0		// Save the current registers to the stack at EL0
 	bl		handle_irq_el1h	// Branch with link to a C function
@@ -177,6 +185,13 @@ snc_valid_el0_64_unknown:
 	
 
 // Branches used by valid exceptions
+
+el1h_da:
+	mrs		x0, esr_el1
+	mrs		x1, elr_el1
+	mrs		x2, far_el1
+	bl		print_el1h_da
+	handle_invalid_entry 0, DA_ERROR_EL1h
 
 el0_64_svc:
 	adr		x27, syscall_table		// Load syscall table pointer

@@ -5,13 +5,13 @@
 
 .section ".text.boot"
 
-.macro create_table_entry, tbl, virt, shift, tmp1, tmp2
+.macro create_table_entry, tbl, virt, shift, offset, tmp1, tmp2
 	lsr		\tmp1, \virt, #\shift						// Get the page index from the va
 	and		\tmp1, \tmp1, #DESCRIPTORS_PER_TABLE-1		// Clear the top bits of the index
-	add		\tmp2, \tbl, #PAGE_SIZE						// Get address of next table
+	add		\tmp2, \tbl, #\offset						// Get address of next table to map
 	orr		\tmp2, \tmp2, #MM_TYPE_PAGE_TABLE			// Set lower bits to a table descriptor
 	str		\tmp2, [\tbl, \tmp1, lsl #3]				// Store address of next table in first table
-	add		\tbl, \tbl, #PAGE_SIZE						// Set table pointer to next table
+	//add		\tbl, \tbl, #PAGE_SIZE						// Set table pointer to next table
 .endm													// Ready to be called again
 
 
@@ -40,17 +40,28 @@ _create_kernel_tables:
 	bl		zero_memory			// Zero the tables
 	adrp	x0, __k_pages_start	// Load kernel table address
 	mov		x1, #VA_START		// Load virtual memory start address
-	create_table_entry x0, x1, PGD_SHIFT, x3, x4	// Create the PGD table for the kernel
-	create_table_entry x0, x1, PUD_SHIFT, x3, x4	// Create the PUD table for the kernel
+	create_table_entry x0, x1, PGD_SHIFT, PAGE_SIZE, x3, x4	// Create the PGD table for the kernel
+	add		x0, x0, #PAGE_SIZE								// Get address of the PUD
+	create_table_entry x0, x1, PUD_SHIFT, PAGE_SIZE, x3, x4	// Create the PUD table for the kernel
+	ldr		x1, =LOCAL_BASE									// Load the VA of the local peripherals
+	create_table_entry x0, x1, PUD_SHIFT, (2*PAGE_SIZE), x3, x4	// Map the second PMD
+	add		x0, x0, #PAGE_SIZE									// Get address of first PMD
 	/* Map available memory as normal, non-cacheable*/
 	mov		x1, xzr												// Map phys addr 0
 	mov		x2, #VA_START										// to virt addr 0
-	ldr		x3, =( VA_START + MMIO_BASE_PHYS - SECTION_SIZE )	// for all memory until device registers
+	ldr		x3, =( MMIO_BASE - SECTION_SIZE )					// for all memory until device registers
 	create_block_map x0, x1, x2, x3, MMU_NNC_FLAGS, x4			// Map available mem as sections in the PMD
 	/* Map device memory as devices */
 	mov		x1, #MMIO_BASE_PHYS									// Map phys addr mmio_base
-	ldr		x2, =( VA_START + MMIO_BASE_PHYS )					// to virt addr mmio_base
-	ldr		x3, =( VA_START + PHYS_MEM_SIZE - SECTION_SIZE )	// until the end of memory
+	ldr		x2, =MMIO_BASE										// to virt addr mmio_base	
+	ldr		x3, =( LOCAL_BASE - SECTION_SIZE )					// until the end of the GPU address space (1GB)
 	create_block_map x0, x1, x2, x3, MMU_DEVICE_FLAGS, x4		//
+
+	add		x0, x0, #PAGE_SIZE									// Get address of second PMD
+	mov		x1, #LOCAL_BASE_PHYS								// Now we map the local base (1GB)
+	ldr		x2, =LOCAL_BASE										// to its virtual counterpart
+	ldr		x3, =( LOCAL_END - SECTION_SIZE )					// until the end of the device maps
+	create_block_map x0, x1, x2, x3, MMU_DEVICE_FLAGS, x4		//
+
 	mov		x30, x29			// Restore the return address
 	ret							// gtfo

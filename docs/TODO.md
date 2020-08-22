@@ -6,13 +6,9 @@ There are likely loads with virtual memory.
 
 
 ## Frontburner
-- Map local timer register memory.
-	- Register starts at `0x40000000` (1GB) which is also the high memory limit.
-	- Do more research on the actual memory maps.
 - Separate user code better
 - User level printf access.
 - User level scheduling.
-- [btzsrc virtual memory](https://github.com/bztsrc/raspi3-tutorial/tree/master/10_virtualmemory)
 - Clean up code a little bit. `mem` depends on `tasks` and `tasks` depends on `mem`.
 
 

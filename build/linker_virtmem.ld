@@ -60,11 +60,11 @@ SECTIONS{
 	. = ALIGN(0x00001000);
 
 	/*
-	 *	Allocate 3x4k pages inside the kernel image
+	 *	Allocate 4x4k pages inside the kernel image
 	 *	Save the start and size of the section
 	 */
 	__k_pages_start = .;
-	.data.pgd	: { . += (3 * (1 << 12)); }
+	.data.pgd	: { . += (4 * (1 << 12)); }
 	__k_pages_end = .;
 	__k_pages_size = __k_pages_end - __k_pages_start;
 }

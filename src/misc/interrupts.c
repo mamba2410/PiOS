@@ -28,7 +28,9 @@ char* const IRQ_NAMES[] = {
 	"System Error EL0_64",
 	"Synchronous Exception EL0_64 ERROR",
 	"System Call EL0_64 ERROR",
-	"Data Abort EL0_64, invalid memory"
+	"Data Abort EL0_64, invalid memory",
+	"Data Abort EL1h, invalid memory",
+	"Synchronous exception EL1h ERROR",
 };
 
 /*
@@ -55,22 +57,22 @@ void handle_irq_el1h(){
 	}
 
 	// Core-specific IRQs, core 0
-	//while( (irq=mmio_get32(LOCAL_TIMER_CORE0_IRQ_REG)) ) {
-	//	switch(irq) {
-	//		case LOCAL_TIMER_IRQ: handle_local_timer(); break;
-	//		default: printf("[E] Unknown pending irq (c): %x\n", irq);	// The IRQ is unrecognised and ignored
-	//	}
-	//}
+	while( (irq=mmio_get32(LOCAL_TIMER_CORE0_IRQ_REG)) ) {
+		switch(irq) {
+			case LOCAL_TIMER_IRQ: handle_local_timer(); break;
+			default: printf("[E] Unknown pending irq (c): %x\n", irq);	// The IRQ is unrecognised and ignored
+		}
+	}
 
-	// Baisc peripheral IRQs
-	//while( (irq=mmio_get32(IRQ_BASIC_PENDING)) ) {
-	//	switch(irq) {
-	//		case LOCAL_TIMER_IRQ: handle_arm_timer(); break;
-	//		case PENDING_IRQ1:
-	//		case PENDING_IRQ2: break;
-	//		default: printf("[E] Unknown pending irq (b): %x\n", irq);
-	//	}
-	//}
+	// Basic peripheral IRQs
+	while( (irq=mmio_get32(IRQ_BASIC_PENDING)) ) {
+		switch(irq) {
+			case LOCAL_TIMER_IRQ: handle_arm_timer(); break;
+			case PENDING_IRQ1:
+			case PENDING_IRQ2: break;
+			default: printf("[E] Unknown pending irq (b): %x\n", irq);
+		}
+	}
 }
 
 /*
@@ -100,6 +102,17 @@ void show_invalid_entry_message(uint8_t exception_type, uint64_t esr, uint64_t e
 			(esr>>ESR_ELx_EC_SHIFT)&0x3f,
 			elr
 		);
+}
+
+/*
+ * Prints information about the data abort at EL1
+ */
+void print_el1h_da(uint64_t esr, uint64_t elr, uint64_t far) {
+	printf("\
+[E] Data abort error at EL1h; esr: 0x%08x\n\
+--> elr: 0x%08x; far: 0x%08x\n",
+		esr, elr, far
+	);
 }
 
 void handle_el0_64_unknown(uint64_t esr, uint64_t elr){
