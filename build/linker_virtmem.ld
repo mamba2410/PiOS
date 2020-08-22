@@ -66,5 +66,9 @@ SECTIONS{
 	__k_pages_start = .;
 	.data.pgd	: { . += (4 * (1 << 12)); }
 	__k_pages_end = .;
-	__k_pages_size = __k_pages_end - __k_pages_start;
 }
+
+__k_pages_size = __k_pages_end - __k_pages_start;
+
+
+

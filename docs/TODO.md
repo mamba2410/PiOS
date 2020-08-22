@@ -10,6 +10,7 @@ There are likely loads with virtual memory.
 - User level printf access.
 - User level scheduling.
 - Clean up code a little bit. `mem` depends on `tasks` and `tasks` depends on `mem`.
+- Clean up Makefile a lot. Lots of unecessary variables.
 
 
 ## Exercises
