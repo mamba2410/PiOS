@@ -96,6 +96,7 @@ typedef struct {
 	int64_t		priority;
 	uint64_t	stack;
 	uint64_t	flags;
+	uint64_t	pid;
 	mm_t		mm;
 } task_t;
 
@@ -109,6 +110,7 @@ typedef struct {
 							.priority		= 1,\
 							.stack			= 0,\
 							.flags			= PF_KERNEL_THREAD,\
+							.pid			= 0,\
 							.mm				= INIT_MM_STRUCT}
 
 

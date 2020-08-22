@@ -37,6 +37,7 @@ int32_t create_process(uint64_t clone_flags, uint64_t func, uint64_t arg){
 	page->cpu_context.sp  = (uint64_t)child_regs;		// Set child stack pointer to just below its saved registers
 
 	int32_t pid = number_tasks++;	// Get the PID of the child task
+	page->pid = pid;				// Set the PID for the task
 	tasks[pid] = page;				// Put child task in the global array
 
 	preempt_enable();				// Done making a new task, can switch now

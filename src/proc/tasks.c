@@ -94,7 +94,7 @@ void switch_task(task_t *task){
 
 
 /*
- * Function to exit and destroy a task after compeltion
+ * Function to exit and destroy a task after completion
  */
 void exit_process(){
 	preempt_disable();							// Don't interrupt killing a task
