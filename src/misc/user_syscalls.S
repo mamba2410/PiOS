@@ -5,8 +5,8 @@
 /*
  * Wrapper function for the write syscall	
  */
-.global call_sys_write
-call_sys_write:
+.global sys_write
+sys_write:
 	mov		x8, #SYSCALL_WRITE	// Load x8 with the ID for write syscall
 	svc		#0					// Generate a synchronous exception to go to the interrupt handler
 	ret							// Once we are done, return to sender
@@ -15,8 +15,8 @@ call_sys_write:
 /*
  * Wrapper function for the clone syscall
  */	
-.global call_sys_clone
-call_sys_clone:
+.global sys_clone
+sys_clone:
 	mov		x10, x0				// Save function pointer in x10	
 	mov		x11, x1				// Save function argument in x11
 	mov		x12, x2				// Save stack pointer in x12
@@ -41,8 +41,8 @@ thread_start:
 /*
  * Wrapper function for the fork syscall
  */
-.global call_sys_fork
-call_sys_fork:
+.global sys_fork
+sys_fork:
 	mov		x8, #SYSCALL_FORK
 	svc		#0
 	ret
@@ -50,8 +50,8 @@ call_sys_fork:
 /*
  * Wrapper function fot the malloc syscall
  */
-.global call_sys_malloc
-call_sys_malloc:
+.global sys_malloc
+sys_malloc:
 	mov		w8,	#SYSCALL_MALLOC	// Load register with malloc syscall ID
 	svc		#0					// Generate synchronous exception
 	ret							// Return to sender
@@ -60,8 +60,8 @@ call_sys_malloc:
 /*
  * Wrapper function for the exit syscall
  */
-.global call_sys_exit
-call_sys_exit:
+.global sys_exit
+sys_exit:
  	mov		w8,	#SYSCALL_EXIT	// Load register with exit syscall ID
 	svc		#0					// Generate synchronous exception
 	ret							// Return to sender

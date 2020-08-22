@@ -9,7 +9,7 @@
  * Syscall to write to the console
  * Currently printf serial, also does not do any formatting, just writes
  */
-void sys_write(char* buf){
+void _sys_write(char* buf){
 	printf(buf);
 }
 
@@ -19,7 +19,7 @@ void sys_write(char* buf){
  * Will be in user mode
  * NOTE: Does not work for now in virtual memory, function pointers will be off
  */
-uint8_t sys_clone(uint64_t stack){
+uint8_t _sys_clone(uint64_t stack){
 	//return create_process(0, 0, 0, stack);
 	return 0xFF;
 }
@@ -28,7 +28,7 @@ uint8_t sys_clone(uint64_t stack){
  * Forks a process, both tasks will be exactly the same, with
  * separate virtual memory and PIDs
  */
-int32_t sys_fork() {
+int32_t _sys_fork() {
 	//printf("[D] Forking at EL %d\n", get_exception_level());
 	return create_process(0, 0, 0);
 }
@@ -37,7 +37,7 @@ int32_t sys_fork() {
 /*
  * Allocates a new memory page 
  */
-uint64_t sys_malloc(){
+uint64_t _sys_malloc(){
 	uint64_t page = get_page();
 	if(!page) return -1;
 	return page;
@@ -47,8 +47,9 @@ uint64_t sys_malloc(){
 /*
  * Exits a process and cleans it up properly
  */
-void sys_exit(){
+void _sys_exit(){
 	exit_process();
 }
 
-void* const syscall_table[] = {sys_write, sys_clone, sys_malloc, sys_exit, sys_fork};
+void* const syscall_table[] = {_sys_write, _sys_clone, _sys_malloc, _sys_exit, _sys_fork};
+

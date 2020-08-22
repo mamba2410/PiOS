@@ -11,18 +11,18 @@
 #ifndef __ASSEMBLER__
 #include <stdint.h>
 
-void	 sys_write(char*);
-uint8_t	 sys_clone(uint64_t);
-int32_t	 sys_fork();
-uint64_t sys_malloc();
-void	 sys_exit();
-void	 user_delay(uint64_t);
+void	 _sys_write(char*);
+uint8_t	 _sys_clone(uint64_t);
+int32_t	 _sys_fork();
+uint64_t _sys_malloc();
+void	 _sys_exit();
 
-extern void	 	call_sys_write(char*);
-extern uint8_t	call_sys_clone(uint64_t func, uint64_t arg, uint64_t sp);
-extern int32_t	call_sys_fork();
-extern uint64_t call_sys_malloc();
-extern void	 	call_sys_exit();
+extern void	 	sys_write(char*);
+extern uint8_t	sys_clone(uint64_t func, uint64_t arg, uint64_t sp);
+extern int32_t	sys_fork();
+extern uint64_t sys_malloc();
+extern void	 	sys_exit();
+extern void		user_delay(uint64_t);
 
 
 #endif /* __ASSEMBLER__ */
