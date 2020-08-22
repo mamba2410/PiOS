@@ -21,10 +21,10 @@ SECTIONS{
 	 */
 	. = ALIGN(0x00001000);
 	__user_start = .;
-	.text.user		: { *user* (.text) }
-	.rodata.user	: { *user* (.rodata) }
-	.data.user		: { *user* (.data) }
-	.bss.user		: { *user* (.bss) }
+	.text.user		: { libuser.a (.text) }
+	.rodata.user	: { libuser.a (.rodata) }
+	.data.user		: { libuser.a (.data) }
+	.bss.user		: { libuser.a (.bss) }
 	__user_end = .;
 
 	/* Have a general code section */

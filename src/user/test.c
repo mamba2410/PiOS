@@ -1,4 +1,4 @@
-#include <user_test.h>
+#include <user/test.h>
 #include <stdint.h>
 #include <misc/syscalls.h>
 

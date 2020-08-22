@@ -4,7 +4,7 @@
 #include <misc/syscalls.h>
 #include <proc/fork.h>
 #include <proc/tasks.h>
-#include <user_test.h>
+#include <user/test.h>
 
 #include <peripherals/mailbox.h>
 #include <addresses/mailbox.h>

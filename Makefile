@@ -117,6 +117,29 @@ $(MISC_OBJ_D)/%_c.o:	$(MISC_SRC_D)/%.c
 $(MISC_BIN): $(MISC_C_OBJ) $(MISC_S_OBJ) $(MISC_INC)
 	$(AR) rcs $(LIB_D)/$(MISC_BIN) $(MISC_C_OBJ) $(MISC_S_OBJ)
 
+# USER module
+USER_BIN		= libuser.a
+USER_CC_FLAGS	= $(GLOBAL_CC_FLAGS)
+USER_LD_FLAGS	= $(GLOBAL_LD_FLAGS)
+USER_AS_FLAGS	= $(GLOBAL_AS_FLAGS)
+USER_SRC_D   	= ./src/user
+USER_INC_D   	= ./include
+USER_OBJ_D   	= ./build/target/objects
+USER_C_SRC	= $(wildcard $(USER_SRC_D)/*.c)
+USER_S_SRC	= $(wildcard $(USER_SRC_D)/*.S)
+USER_INC		= $(wildcard $(USER_INC_D)/*.h)
+USER_C_OBJ	= $(patsubst $(USER_SRC_D)/%.c, $(USER_OBJ_D)/%_c.o, $(USER_C_SRC))
+USER_S_OBJ	= $(patsubst $(USER_SRC_D)/%.S, $(USER_OBJ_D)/%_S.o, $(USER_S_SRC))
+
+$(USER_OBJ_D)/%_S.o:	$(USER_SRC_D)/%.S
+	$(AS) $(USER_AS_FLAGS) -I'$(USER_INC_D)' -c $< -o $@
+
+$(USER_OBJ_D)/%_c.o:	$(USER_SRC_D)/%.c
+	$(CC) $(USER_CC_FLAGS) -I'$(USER_INC_D)' -c $< -o $@ 
+
+$(USER_BIN): $(USER_C_OBJ) $(USER_S_OBJ) $(USER_INC)
+	$(AR) rcs $(LIB_D)/$(USER_BIN) $(USER_C_OBJ) $(USER_S_OBJ)
+
 ###########################################################################################################
 # Main recipe
 ###########################################################################################################
@@ -126,7 +149,7 @@ $(MISC_BIN): $(MISC_C_OBJ) $(MISC_S_OBJ) $(MISC_INC)
 MAIN_BIN		= ./build/target/kernel8
 MAIN_LINK_FILE	= ./build/linker_virtmem.ld
 MAIN_CC_FLAGS	= $(GLOBAL_CC_FLAGS)
-MAIN_LD_FLAGS	= $(GLOBAL_LD_FLAGS) -L'$(LIB_D)' -T $(MAIN_LINK_FILE) -lmisc -lperipherals -lproc -lmem
+MAIN_LD_FLAGS	= $(GLOBAL_LD_FLAGS) -L'$(LIB_D)' -T $(MAIN_LINK_FILE) -l user -lmisc -lperipherals -lproc -lmem
 MAIN_AS_FLAGS	= $(GLOBAL_AS_FLAGS)
 MAIN_SRC_D    	= ./src
 MAIN_INC_D   	= ./include
@@ -143,7 +166,7 @@ $(MAIN_OBJ_D)/%_S.o:	$(MAIN_SRC_D)/%.S
 $(MAIN_OBJ_D)/%_c.o:	$(MAIN_SRC_D)/%.c
 	$(CC) $(MAIN_CC_FLAGS) -I'$(MAIN_INC_D)' -c $< -o $@ 
 
-main: $(MAIN_C_OBJ) $(MAIN_S_OBJ) $(MAIN_INC) $(MAIN_LINK_FILE) $(MEMORY_BIN) $(PROC_BIN) $(PERIPHERALS_BIN) $(MISC_BIN)
+main: $(MAIN_C_OBJ) $(MAIN_S_OBJ) $(MAIN_INC) $(MAIN_LINK_FILE) $(MEMORY_BIN) $(PROC_BIN) $(PERIPHERALS_BIN) $(MISC_BIN) $(USER_BIN)
 	$(LD) $(MAIN_C_OBJ) $(MAIN_S_OBJ) $(MAIN_LD_FLAGS) -o $(MAIN_BIN).elf
 	$(TOOLCHAIN_PREFIX)-objcopy $(MAIN_BIN).elf -O binary $(MAIN_BIN).img
 
