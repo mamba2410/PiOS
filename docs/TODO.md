@@ -6,6 +6,8 @@ There are likely loads with virtual memory.
 
 
 ## Frontburner
+- Use a bootloader to stop with the stupid SD card thingy.
+- Slowly port to pi zero w
 - Separate user code better
 - User level printf access.
 - User level scheduling.
