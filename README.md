@@ -59,4 +59,9 @@ Screen tips:
 - Make sure the user is in the `dialout` group, you may need to restart to take effect.
 - Exit `screen` with `C-a + \ + y`
 - Clear output with `C-a + Shift-C`
+- Send ascii files with
+```
+$ screen -S $session_name -x readreg p /path/to/file
+$ screen -S $session_name -x paste p
+```
 
